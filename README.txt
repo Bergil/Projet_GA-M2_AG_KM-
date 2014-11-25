@@ -7,8 +7,8 @@ Triangle
 Vertex
 	double coords[3] //tableau de coordonnée
 	int hauteur; //hauteur par rapport au triangle auquel il appartient
-	triangle //
-	bool bool
+	triangle //Pinte'ur vers le triangle auquel il appartient (pas obligatoire)
+	bool bool //(Pas sur)
 
 //Creation des deux triangles de départ
 	- division du carré en deux
@@ -16,6 +16,19 @@ Vertex
 
 //Ajout d'un point
 	- recupérer le premier point de la file de prio qui est le plus haut par rapport au triangle auquel il appartient
+	- une fois ajouter au maillage, le supprimer de la liste
+	- (booleen a true)
 
 //Subdivision d'un triangle
 	- tester si l'on peut inverser deux triangles à l'aide du cercle
+	- si inversion, stocker les nouvaux triangles dans une pile et tester les inversions tant que le pile est non vide
+	- si les triangles sont trouvé,
+		- recalculer l'appartenance des points à un triangle
+		- recalculer leur hauteur
+		- remettre les voisins
+	- mettre à jour la file de prio sur les triangles pour ejecter le triangle avec le point le plus haut
+
+//Inversion de triangle
+	- recreer les nouveau triangles
+	- supprimer les anciens
+	- mettre à jour la file
