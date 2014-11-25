@@ -18,29 +18,6 @@ int orientationPolaire(const vertex *A, const vertex *B, const vertex *C)
 }
 
 
-//Teste si le point est compris dans un triangle
-int estDansTriangle(vertex *a, vertex *b, vertex *c, vertex *pt)
-{
-    int orientationTriangle;
-    orientationTriangle = orientationPolaire(a,b,c);
-    if(orientationPolaire(a,b,pt) == orientationTriangle || orientationPolaire(a,b,pt) == ALIGNE)
-    {
-	if(orientationPolaire(b,c,pt) == orientationTriangle || orientationPolaire(b,c,pt) == ALIGNE)
-	{
-	     if(orientationPolaire(c,a,pt) == orientationTriangle || orientationPolaire(c,a,pt) == ALIGNE)
-	     {
-		if(orientationPolaire(a,b,pt) == ALIGNE ||
-		   orientationPolaire(b,c,pt) == ALIGNE ||
-		   orientationPolaire(c,a,pt) == ALIGNE)
-			return -1;
-		return 1;
-	     }
-	}
-    }	
-    return 0;
-}
-
-
 int estAuDessusX(vertex* a, vertex*  b)
 {
 	if(a->coords[0] > b->coords[0])

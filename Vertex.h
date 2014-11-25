@@ -17,9 +17,6 @@ double determinant(const vertex *A, const vertex *B, const vertex *C);
 //Retourne l'orientation entre 3 points (pour le 1er quadrant)
 int orientationPolaire(const vertex *A, const vertex *B, const vertex *C);
 
-//Teste si le point est compris dans un triangle
-int estDansTriangle(vertex *a, vertex *b, vertex *c, vertex *pt);
-
 int estAuDessusX(vertex* a, vertex *b);
 
 int estAuDessusY(vertex* a, vertex* b);
