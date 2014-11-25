@@ -1,49 +1,116 @@
+#include "Triangle.h"
 
-triangle* newTriangle()
+Triangle* newTriangle()
 {
-	pt1 = NULL;
-	pt2 = NULL;
-	pt3 = NULL;
+	Triangle* t = (Triangle*) malloc(sizeof(Triangle));
+
+	t->m_tab_points[0] = NULL;
+	t->m_tab_points[1] = NULL;
+	t->m_tab_points[2] = NULL;
+
+	t->m_tab_voisins[0] = NULL;
+	t->m_tab_voisins[1] = NULL;
+	t->m_tab_voisins[2] = NULL;
+
+	//t->m_list_candidats = NULL;
+	return t;
 }
 
-triangle* newTriangle(vertex* p1, vertex* p2, vertex* p3)
+
+Triangle* newTriangleWithPoint(vertex* p1, vertex* p2, vertex* p3)
 {
-	triangle* t = (triangle*) malloc(sizeof(triangle));
-	t->pt1 = p1;
-	if(orientationPolaire(p1,p2,p3)){
-		t->pt2 = p2;
-		t->pt3 = p3; 
-	}else{
-		t->pt2 = p3;
-		t->pt3 = p2; 
-	}	
+	Triangle* t = (Triangle*) malloc(sizeof(Triangle));
+	
+	t->m_tab_points[0] = minLexico(p1,p2,p3);
+	fprintf(stderr, "min lexico: %f %f %f\n", t->m_tab_points[0]->coords[0], t->m_tab_points[0]->coords[1], t->m_tab_points[0]->coords[2]);
+
+	if(egalite(t->m_tab_points[0], p1))
+	{
+		fprintf(stderr, "c'est p1 le premier: \n");
+		if(orientationPolaire(p1,p2,p3) == AGAUCHE)
+		{
+			t->m_tab_points[1] = p2;
+			t->m_tab_points[2] = p3; 
+		}
+		else
+		{
+			t->m_tab_points[1] = p3;
+			t->m_tab_points[2] = p2; 
+		}
+	}
+	else if(egalite(t->m_tab_points[0], p2))
+	{
+		fprintf(stderr, "c'est p2 le premier: \n");
+		if(orientationPolaire(p2,p1,p3) == AGAUCHE)
+		{
+			t->m_tab_points[1] = p1;
+			t->m_tab_points[2] = p3; 
+		}
+		else
+		{
+			t->m_tab_points[1] = p3;
+			t->m_tab_points[2] = p1; 
+		}
+	}
+	else
+	{
+		fprintf(stderr, "c'est p3 le premier: \n");
+		if(orientationPolaire(p3,p1,p2) == AGAUCHE)
+		{
+			t->m_tab_points[1] = p1;
+			t->m_tab_points[2] = p2; 
+		}
+		else
+		{
+			t->m_tab_points[1] = p2;
+			t->m_tab_points[2] = p1; 
+		}
+	}
+
+	t->m_tab_voisins[0] = NULL;
+	t->m_tab_voisins[1] = NULL;
+	t->m_tab_voisins[2] = NULL;
+
+	//t->m_list_candidats = NULL;
+	
+	return t;
 }
 
-void deleteAllTriangle(triangle* t)
+
+void deleteAllTriangle(Triangle* t)
 {
-	free(t->pt1);
-	free(t->pt2);
-	free(t->pt3);
+	free(t->m_tab_points[0]);
+	free(t->m_tab_points[1]);
+	free(t->m_tab_points[2]);
+
+	free(t->m_tab_voisins[0]);
+	free(t->m_tab_voisins[1]);
+	free(t->m_tab_voisins[2]);
+
+	//free(t->m_list_candidats);
+}
+
+
+void deleteTriangle(Triangle* t)
+{
+	deleteAllTriangle(t);
 	free(t);
 }
 
-void deleteTriangle(triangle* t)
-{
-	free(t);
-}
+
 
 //Teste si le point est compris dans un triangle
-int estDansTriangle(triangle* t, vertex *pt)
+int estDansTriangle(Triangle* t, vertex *pt)
 {
     int orientationTriangle;
-    orientationTriangle = orientationPolaire(t->pt1,t->pt2,t->pt3);
-    if(orientationPolaire(t->pt1,t->pt2,pt) == orientationTriangle || orientationPolaire(t->pt1,t->pt2,pt) == ALIGNE)
+    orientationTriangle = orientationPolaire(t->m_tab_points[0],t->m_tab_points[1],t->m_tab_points[2]);
+    if(orientationPolaire(t->m_tab_points[0],t->m_tab_points[1],pt) == orientationTriangle || orientationPolaire(t->m_tab_points[0],t->m_tab_points[1],pt) == ALIGNE)
     {
-		if(orientationPolaire(t->pt2,t->pt3,pt) == orientationTriangle || orientationPolaire(t->pt2,t->pt3,pt) == ALIGNE)
+		if(orientationPolaire(t->m_tab_points[1],t->m_tab_points[2],pt) == orientationTriangle || orientationPolaire(t->m_tab_points[1],t->m_tab_points[2],pt) == ALIGNE)
 		{
-			if(orientationPolaire(t->pt3,t->pt1,pt) == orientationTriangle || orientationPolaire(t->pt3,t->pt1,pt) == ALIGNE){
-				if(orientationPolaire(t->pt1,t->pt2,pt) == ALIGNE || orientationPolaire(t->pt2,t->pt3,pt) == ALIGNE ||
-				   orientationPolaire(t->pt3,t->pt1,pt) == ALIGNE)
+			if(orientationPolaire(t->m_tab_points[2],t->m_tab_points[0],pt) == orientationTriangle || orientationPolaire(t->m_tab_points[2],t->m_tab_points[0],pt) == ALIGNE){
+				if(orientationPolaire(t->m_tab_points[0],t->m_tab_points[1],pt) == ALIGNE || orientationPolaire(t->m_tab_points[1],t->m_tab_points[2],pt) == ALIGNE ||
+				   orientationPolaire(t->m_tab_points[2],t->m_tab_points[0],pt) == ALIGNE)
 					return -1;
 				return 1;
 			}

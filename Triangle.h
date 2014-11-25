@@ -13,29 +13,29 @@
 
 
 /**
- * \struct triangle
- * \brief Objet triangle
+ * \struct s_triangle
+ * \brief Objet Triangle
  *
  * triangle est un objet comprenant 3 points pour représenter un triangle 
  */
 typedef struct s_triangle
 {
-	vertex* pt1; /*!< pointeur sur un point */
-	vertex* pt2; /*!< pointeur sur un point */
-	vertex* pt3; /*!< pointeur sur un point */
-} triangle;
+	vertex* m_tab_points[3]; /*!< tableau de points */
+	vertex* m_tab_voisins[3]; /*!< tableau de voisins */
+	//List* m_list_candidats; /*!< pointeur sur un point */
+} Triangle;
 
 /**
- * \fn triangle* newTriangle();
+ * \fn Triangle* newTriangle();
  *
  * \brief Fonction de création d'une nouvelle instance d'un objet triangle avec ses points mis à NULL.
  *
  * \return Instance nouvellement allouée d'un objet de type triangle avec ses points mis à NULL.
  */
-triangle* newTriangle();
+Triangle* newTriangle();
 
 /**
- * \fn triangle* newTriangle(vertex* p1, vertex* p2, vertex* p3)
+ * \fn Triangle* newTriangle(vertex* p1, vertex* p2, vertex* p3)
  *
  * \brief Fonction de création d'une nouvelle instance d'un objet triangle à partir de ses 3 points
  *
@@ -45,26 +45,25 @@ triangle* newTriangle();
  *
  * \return Instance nouvellement allouée d'un objet de type triangle avec ses points.
  */
-triangle* newTriangle(vertex* p1, vertex* p2, vertex* p3);
+Triangle* newTriangleWithPoint(vertex* p1, vertex* p2, vertex* p3);
 
 /**
- * \fn void deleteAllTriangle(triangle* t)
+ * \fn void deleteAllTriangle(Triangle* t)
  *
  * \brief Destruction d'un objet triangle ainsi que tous ses points
  *
  * \param t Pointeur sur un point du triangle
  */
-void deleteAllTriangle(triangle* t);
+void deleteAllTriangle(Triangle* t);
 
 /**
- * \fn void deleteTriangle(triangle* t)
+ * \fn void deleteTriangle(Triangle* t)
  *
  * \brief Destruction d'un objet triangle sans detruire ses points
  *
  * \param t Pointeur sur un point du triangle
  */
-void deleteTriangle(triangle* t);
+void deleteTriangle(Triangle* t);
 
 
-//Teste si le point est compris dans un triangle
-int estDansTriangle(triangle* t, vertex *pt);
+int estDansTriangle(Triangle* t, vertex *pt);

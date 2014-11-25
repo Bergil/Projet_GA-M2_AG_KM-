@@ -18,7 +18,7 @@ double determinant(const vertex *A, const vertex *B, const vertex *C);
 int orientationPolaire(const vertex *A, const vertex *B, const vertex *C);
 
 //Teste si le point est compris dans un triangle
-int estDansTriangle(vertex *a, vertex *b, vertex *c, vertex *pt);
+//int estDansTriangle(vertex *a, vertex *b, vertex *c, vertex *pt);
 
 int estAuDessusX(vertex* a, vertex *b);
 
@@ -31,3 +31,5 @@ int egalite(vertex* a, vertex* b);
 double calculLongueur(vertex* a, vertex* b);
 
 void affichageVertex(vertex * v);
+
+vertex * minLexico(vertex *a, vertex *b, vertex *c);

@@ -2,6 +2,11 @@
 #include <math.h>
 
 
+#define ALLOUER(X,NB) do if ( (X = malloc(sizeof(*(X)) * (NB))) == 0 )\
+                             { fprintf(stderr, "Plus de memoire\n") ; \
+                                exit(1); } \
+                      while(0)
+
 double determinant(const vertex *A, const vertex *B, const vertex *C)
 {
     return (B->coords[0]-A->coords[0]) * (C->coords[1]-A->coords[1]) - (B->coords[1]-A->coords[1]) * (C->coords[0]-A->coords[0]);
@@ -19,26 +24,26 @@ int orientationPolaire(const vertex *A, const vertex *B, const vertex *C)
 
 
 //Teste si le point est compris dans un triangle
-int estDansTriangle(vertex *a, vertex *b, vertex *c, vertex *pt)
+/*int estDansTriangle(vertex *a, vertex *b, vertex *c, vertex *pt)
 {
     int orientationTriangle;
     orientationTriangle = orientationPolaire(a,b,c);
     if(orientationPolaire(a,b,pt) == orientationTriangle || orientationPolaire(a,b,pt) == ALIGNE)
     {
-	if(orientationPolaire(b,c,pt) == orientationTriangle || orientationPolaire(b,c,pt) == ALIGNE)
-	{
-	     if(orientationPolaire(c,a,pt) == orientationTriangle || orientationPolaire(c,a,pt) == ALIGNE)
-	     {
-		if(orientationPolaire(a,b,pt) == ALIGNE ||
-		   orientationPolaire(b,c,pt) == ALIGNE ||
-		   orientationPolaire(c,a,pt) == ALIGNE)
-			return -1;
-		return 1;
-	     }
-	}
+		if(orientationPolaire(b,c,pt) == orientationTriangle || orientationPolaire(b,c,pt) == ALIGNE)
+		{
+		     if(orientationPolaire(c,a,pt) == orientationTriangle || orientationPolaire(c,a,pt) == ALIGNE)
+		     {
+			if(orientationPolaire(a,b,pt) == ALIGNE ||
+			   orientationPolaire(b,c,pt) == ALIGNE ||
+			   orientationPolaire(c,a,pt) == ALIGNE)
+				return -1;
+			return 1;
+		     }
+		}
     }	
     return 0;
-}
+}*/
 
 
 int estAuDessusX(vertex* a, vertex*  b)
@@ -83,6 +88,33 @@ void affichageVertex(vertex * v)
 {
 	fprintf(stderr, "Point :    %f      %f		%f\n", v->coords[0], v->coords[1], v->coords[2]);
 }
+
+
+
+vertex * minLexico(vertex *a, vertex *b, vertex *c)
+{
+	int i;
+	vertex * temp;
+	vertex * res = a;
+	ALLOUER(temp, 3);
+	temp[0] = *a;
+	temp[1] = *b;
+	temp[2] = *c;
+	for(i = 0; i < 3; i++)
+	{
+		if(temp[i].coords[0] < res->coords[0])
+		{
+			res = &temp[i];
+		}
+		else if (res->coords[0] == temp[i].coords[0])
+		{
+			if (temp[i].coords[1] < res->coords[1])
+				res = &temp[i];
+		}
+	}
+	return res;
+}
+
 /*
 double calculAngle3points(vertex* A, vertex* B, vertex* C)
 {
