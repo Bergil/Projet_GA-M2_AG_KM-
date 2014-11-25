@@ -1,5 +1,5 @@
 #include "Vertex.h"
-
+#include "List.h"
 /**
  * \file triangle.h
  * \brief Header de la struct triangle
@@ -21,8 +21,8 @@
 typedef struct s_triangle
 {
 	vertex* m_tab_points[3]; /*!< tableau de points */
-	vertex* m_tab_voisins[3]; /*!< tableau de voisins */
-	//List* m_list_candidats; /*!< pointeur sur un point */
+	vertex* m_tab_voisins[3]; /*!< tableau de voisins*/
+	List* m_list_candidats; /*!< pointeur sur un point */
 } Triangle;
 
 /**

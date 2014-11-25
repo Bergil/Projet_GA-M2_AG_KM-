@@ -10,6 +10,7 @@
 typedef struct s_vertex
 {
 	double coords[DIM];
+	int hauteur;
 } vertex;
 
 double determinant(const vertex *A, const vertex *B, const vertex *C);

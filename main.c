@@ -19,22 +19,23 @@ extern int opterr;
 
 /*! Tailles diverses du systemes de fenetrage .*/
 const double minX = 0,
-             maxX = 500,
+             maxX = 1,
 			 minY = 0,
-			 maxY = 500,
-			 minZ = 0,
+			 maxY = 1,
+			 minZ = -500,
 			 maxZ = 500,
 			 margin = 10;
 
 /*! Nombre de "sites" dans le programme, modifiable par la ligne
  * de commande de la fonction main().
  */
-int nbPoints = 2000;
+int nbPoints = 50;
 
 GLint GlobalePrimitiveDessin;
 
 /*! Tableau gobal des sommets */
-vertex *T = NULL;
+vertex *TVertex = NULL;
+vertex *TSimplex = NULL;
 
 
 ///Début des fonctions /////
@@ -56,13 +57,19 @@ void winInit()
 /*! Generations des sites */
 void selectPoints(int nbPoints)
 {
+  
+  int i;
+  for(i = 0; i < 4; i++){
+	 TVertex[i].coords[0] = (i%2)*maxX;
+     TVertex[i].coords[1] = (i/2)*maxY;
+     TVertex[i].coords[2] = myRandom(minZ, maxZ);
+  }
   int n = nbPoints;
-
-  while (--n >= 0)
+  while (--n >= 4)
    {
-     T[n].coords[0] = myRandom(minX+10, maxX-10);
-     T[n].coords[1] = myRandom(minY+10, maxY-10);
-     T[n].coords[2] = myRandom(minZ+10, maxZ-10);
+     TVertex[n].coords[0] = myRandom(minX, maxX);
+     TVertex[n].coords[1] = myRandom(minY, maxY);
+     TVertex[n].coords[2] = myRandom(minZ, maxZ-10);
    }
 }
 
@@ -93,13 +100,26 @@ void displayTriangle(void)
 	glColor3f(0.0, 0.0, 0.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	
-	glBegin(GL_POINTS);
+	glBegin(GL_LINES);
 	
+	glColor3f(1.0, 1.0, 1.0);
+	glVertex2f(TVertex[0].coords[0], TVertex[0].coords[1]);glVertex2f(TVertex[1].coords[0], TVertex[1].coords[1]);
+	glVertex2f(TVertex[1].coords[0], TVertex[1].coords[1]);glVertex2f(TVertex[2].coords[0], TVertex[2].coords[1]);
+	glVertex2f(TVertex[2].coords[0], TVertex[2].coords[1]);glVertex2f(TVertex[0].coords[0], TVertex[0].coords[1]);
+
+	glEnd();
+
+	glBegin(GL_POINTS);
+
+	while (--n >= 0){
+		glColor3f(1.0, 0, 0);
+		affichageVertex(&TVertex[n]);
+		glVertex2f(TVertex[n].coords[0], TVertex[n].coords[1]);
+	}
 	glEnd();
 
 	glFlush();
 }
-
 
 
 /*! \brief Fonction principale: on peut choisir le nombre de points
@@ -132,41 +152,26 @@ int main(int argc, char **argv)
 		}
 	}
 
-	vertex * pt1;
-	ALLOUER(pt1,1);
-	vertex * pt2;
-	ALLOUER(pt2,1);
-	vertex * pt3;
-	ALLOUER(pt3,1);
-	pt1->coords[0] = 1; 
-	pt1->coords[1] = 1;
-	pt1->coords[2] = 0;
-	pt2->coords[0] = 4; 
-	pt2->coords[1] = 1;
-	pt2->coords[2] = 0;
-	pt3->coords[0] = 2; 
-	pt3->coords[1] = 2;
-	pt3->coords[2] = 0;
+	
 	/*fprintf(stderr, "orientation: %d\n", orientationPolaire(pt3,pt2,pt1));
 	vertex * res = minLexico(pt1,pt2,pt3);
 	fprintf(stderr, "%f %f %f \n", res->coords[0], res->coords[1], res->coords[2]);*/
-	Triangle *t = newTriangleWithPoint(pt2,pt1,pt3);
-	fprintf(stderr, "%f %f %f \n", t->m_tab_points[0]->coords[0], t->m_tab_points[0]->coords[1], t->m_tab_points[0]->coords[2]);
-	fprintf(stderr, "%f %f %f \n", t->m_tab_points[1]->coords[0], t->m_tab_points[1]->coords[1], t->m_tab_points[1]->coords[2]);
-	fprintf(stderr, "%f %f %f \n", t->m_tab_points[2]->coords[0], t->m_tab_points[2]->coords[1], t->m_tab_points[2]->coords[2]);
 
 	//int option = 0;
 	assert(nbPoints > 0);
-	T = (vertex *) malloc(sizeof(vertex)*nbPoints+1);
-	assert(T != NULL);
+	fprintf(stderr,"nbPoints = %d\n", nbPoints);
+	TVertex = (vertex *) malloc(sizeof(vertex)*nbPoints+1);
+	TVertex = (vertex *) malloc(sizeof(vertex)*nbPoints);
+	assert(TVertex != NULL);
 	selectPoints(nbPoints);
 	printf("Veuillez choisir une option : Rien encore\n"); 
+	
 	//clock_t temps;
 	
 	glutInit(&argc, argv);  
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);  
 	glutInitWindowPosition(5,5);  
-	glutInitWindowSize(700, 700);  
+	glutInitWindowSize(500, 500);  
 	glutCreateWindow("My first OpenGL window...");  // Là, c'est une incantation (sic)* de fenêtre !
 	winInit(); 
 	
