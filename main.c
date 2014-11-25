@@ -1,9 +1,10 @@
 #include <assert.h>  
-#include "FilePrio.h"
 #include <unistd.h>  
 #include <GL/glut.h> 
 #include <time.h>
-#
+
+#include "FilePrio.h"
+#include "Triangle.h"
 
 #define ALLOUER(X,NB) do if ( (X = malloc(sizeof(*(X)) * (NB))) == 0 )\
                              { fprintf(stderr, "Plus de memoire\n") ; \
@@ -15,14 +16,6 @@ extern char *optarg;
 
 /*! bascule pour autoriser ou interdire (0) les messages d'erreurs envoyes par getopt. */
 extern int opterr;
-
-typedef struct
-{
-	double xMax;
-	double yMax;
-	double xMin;
-	double yMin;
-} RectangleEnglobant;
 
 /*! Tailles diverses du systemes de fenetrage .*/
 const double minX = 0,
@@ -37,17 +30,14 @@ const double minX = 0,
  * de commande de la fonction main().
  */
 int nbPoints = 2000;
-int nbPointsPoly = 24;
 
 GLint GlobalePrimitiveDessin;
 
 /*! Tableau gobal des sommets */
 vertex *T = NULL;
-//Rectangle englobant
-RectangleEnglobant recEnglo;
+
 
 ///Début des fonctions /////
-
 double myRandom (double a, double b)
 {
   double tmp = rand(); /* long int in [0, RAND_MAX] */
@@ -55,11 +45,13 @@ double myRandom (double a, double b)
   return a+tmp*((b-a)/RAND_MAX);
 }
 
+
 /*! Incantation d'ouverture de fenetre OpenGL */
 void winInit()
 {
   gluOrtho2D(minX, maxX, minY, maxY);
 }
+
 
 /*! Generations des sites */
 void selectPoints(int nbPoints)
@@ -74,7 +66,8 @@ void selectPoints(int nbPoints)
    }
 }
 
-vertex* findFirstLexico(vertex * T){
+
+/*vertex* findFirstLexico(vertex * T){
 	int i;
 	vertex* temp = T;
 	for(i = 1; i < nbPoints; i++){
@@ -87,63 +80,7 @@ vertex* findFirstLexico(vertex * T){
 		}
 	}
 	return temp;
-}
-
-
-/////////////////////////////////////	FIGURE	/////////////////////////////////
-void creerPointsTriangle (void)
-{
-  int n = 3;
-  int estNonDegenere = 0;
-
-  while(!estNonDegenere)
-  {
-	while (--n >= 0)
-	{
-	    T[n].coords[0] = myRandom(minX+10, maxX-10);
-	    T[n].coords[1] = myRandom(minY+10, maxY-10);
-	}
-
-	if(orientationPolaire(&T[0], &T[1], &T[2]))
-	    estNonDegenere = 1;
-  }
-  fprintf(stderr,"triangle OK");
-}
-
-void initialisationRectangleEnglobant()
-{
-	int i;
-	recEnglo.xMax = T[0].coords[0];
-	recEnglo.xMin = T[0].coords[0];
-	recEnglo.yMax = T[0].coords[1];
-	recEnglo.yMin = T[0].coords[1];
-
-	for(i = 1; i<nbPointsPoly; i++)
-	{
-		if(T[i].coords[0] >= recEnglo.xMax)
-			recEnglo.xMax = T[i].coords[0];
-		else if(T[i].coords[0] < recEnglo.xMin)
-			recEnglo.xMin = T[i].coords[0];	
-		
-		if(T[i].coords[1] >= recEnglo.yMax)
-			recEnglo.yMax = T[i].coords[1];
-		else if(T[i].coords[1] < recEnglo.yMin)
-			recEnglo.yMin = T[i].coords[1];	
-	}
-}
-
-
-////////////////////////////////////////////	TESTS INCLUSION		///////////////////////////////////////////
-//Test si on est dans le rectangle englobant
-int estDansRecEnglobant(vertex a)
-{
-	if(a.coords[0] >= recEnglo.xMax || a.coords[0] <= recEnglo.xMin)
-		return 0;
-	if(a.coords[1] >= recEnglo.yMax || a.coords[1] <= recEnglo.yMin)
-		return 0;
-	
-	return 1;
-}
+}*/
 
 
 //////////////////////////////////////// Affichages ///////////////////////////////////////
@@ -156,87 +93,14 @@ void displayTriangle(void)
 	glColor3f(0.0, 0.0, 0.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	
-	glBegin(GL_LINES);
-	
-	glColor3f(1.0, 1.0, 1.0);
-	glVertex2f(T[0].coords[0], T[0].coords[1]);glVertex2f(T[1].coords[0], T[1].coords[1]);
-	glVertex2f(T[1].coords[0], T[1].coords[1]);glVertex2f(T[2].coords[0], T[2].coords[1]);
-	glVertex2f(T[2].coords[0], T[2].coords[1]);glVertex2f(T[0].coords[0], T[0].coords[1]);
-
-	glEnd();
-
 	glBegin(GL_POINTS);
-
-	while (--n >= 3) // Affichage des points du triangle
-	{
-		if(estDansTriangle(&T[0],&T[1],&T[2],&T[n]) == 1) //Si le point est dans le triangle
-		{	
-			glColor3f(0, 1.0, 0);
-			glVertex2f(T[n].coords[0], T[n].coords[1]);
-		}
-		else if (estDansTriangle(&T[0],&T[1],&T[2],&T[n]) == -1)
-		{	
-			glColor3f(0, 0, 1.0);
-			glVertex2f(T[n].coords[0], T[n].coords[1]);
-		}
-		else // Si le point est à l'exterieur du triangle
-		{	
-			glColor3f(1.0, 0, 0);
-			glVertex2f(T[n].coords[0], T[n].coords[1]);
-		}
-	}
+	
 	glEnd();
 
 	glFlush();
 }
 
-/*
-void displayPolygone(void)
-{
-	int n = 23;
 
-	glColor3f(0.0, 0.0, 0.0);
-	glClear(GL_COLOR_BUFFER_BIT);
-	
-	glBegin(GL_LINES);
-	//Affichage polygone
-	glColor3f(1.0, 1.0, 1.0);
-	while(--n >= 0)
-	{
-		glVertex2f(T[n].coords[0], T[n].coords[1]); 
-		glVertex2f(T[n+1].coords[0], T[n+1].coords[1]);
-	}
-	glVertex2f(T[0].coords[0], T[0].coords[1]); 
-	glVertex2f(T[23].coords[0], T[23].coords[1]);
-
-	glEnd();
-
-	n = nbPoints;
-	initialisationRectangleEnglobant();
-	glBegin(GL_POINTS);
-
-	//Affichage du reste des points
-	while(--n >= nbPointsPoly)
-	{	
-		//fprintf(stderr, " n:%d \n", n);
-		if(estDansRecEnglobant(T[n]) == 1)
-		{
-			
-			//fprintf(stderr, " est dans poly x:%f y:%f \n", T[n].coords[0] , T[n].coords[1]);
-			if(estDansPolygone(T[n],T, nbPointsPoly) == 1)
-				glColor3f(0.0, 1.0, 0);
-			else
-				glColor3f(1.0, 0.0, 0);
-		}
-		else
-			glColor3f(1.0, 0.0, 0);
-		glVertex2f(T[n].coords[0], T[n].coords[1]);
-	}
-
-	glEnd();
-
-	glFlush();
-}*/
 
 /*! \brief Fonction principale: on peut choisir le nombre de points
  * en utilisant l'option "-nX" où X est un entier strictement
@@ -267,6 +131,30 @@ int main(int argc, char **argv)
 					  break;
 		}
 	}
+
+	vertex * pt1;
+	ALLOUER(pt1,1);
+	vertex * pt2;
+	ALLOUER(pt2,1);
+	vertex * pt3;
+	ALLOUER(pt3,1);
+	pt1->coords[0] = 1; 
+	pt1->coords[1] = 1;
+	pt1->coords[2] = 0;
+	pt2->coords[0] = 4; 
+	pt2->coords[1] = 1;
+	pt2->coords[2] = 0;
+	pt3->coords[0] = 2; 
+	pt3->coords[1] = 2;
+	pt3->coords[2] = 0;
+	/*fprintf(stderr, "orientation: %d\n", orientationPolaire(pt3,pt2,pt1));
+	vertex * res = minLexico(pt1,pt2,pt3);
+	fprintf(stderr, "%f %f %f \n", res->coords[0], res->coords[1], res->coords[2]);*/
+	Triangle *t = newTriangleWithPoint(pt2,pt1,pt3);
+	fprintf(stderr, "%f %f %f \n", t->m_tab_points[0]->coords[0], t->m_tab_points[0]->coords[1], t->m_tab_points[0]->coords[2]);
+	fprintf(stderr, "%f %f %f \n", t->m_tab_points[1]->coords[0], t->m_tab_points[1]->coords[1], t->m_tab_points[1]->coords[2]);
+	fprintf(stderr, "%f %f %f \n", t->m_tab_points[2]->coords[0], t->m_tab_points[2]->coords[1], t->m_tab_points[2]->coords[2]);
+
 	//int option = 0;
 	assert(nbPoints > 0);
 	T = (vertex *) malloc(sizeof(vertex)*nbPoints+1);
