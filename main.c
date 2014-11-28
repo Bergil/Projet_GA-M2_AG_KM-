@@ -34,8 +34,8 @@ int nbPoints = 50;
 GLint GlobalePrimitiveDessin;
 
 /*! Tableau gobal des sommets */
-vertex *TVertex = NULL;
-vertex *TSimplex = NULL;
+Vertex *TVertex = NULL;
+Vertex *TSimplex = NULL;
 
 
 ///Début des fonctions /////
@@ -156,8 +156,8 @@ int main(int argc, char **argv)
 	//int option = 0;
 	assert(nbPoints > 0);
 	fprintf(stderr,"nbPoints = %d\n", nbPoints);
-	TVertex = (vertex *) malloc(sizeof(vertex)*nbPoints+5);
-	TSimplex= (vertex *) malloc(sizeof(vertex)*nbPoints);
+	TVertex = (Vertex *) malloc(sizeof(Vertex)*nbPoints+5);
+	TSimplex= (Vertex *) malloc(sizeof(Vertex)*nbPoints);
 	assert(TVertex != NULL);
 	selectPoints(nbPoints);
 	printf("Veuillez choisir une option : Rien encore\n"); 
