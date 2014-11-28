@@ -160,8 +160,8 @@ int main(int argc, char **argv)
 	//int option = 0;
 	assert(nbPoints > 0);
 	fprintf(stderr,"nbPoints = %d\n", nbPoints);
-	TVertex = (vertex *) malloc(sizeof(vertex)*nbPoints+1);
-	TVertex = (vertex *) malloc(sizeof(vertex)*nbPoints);
+	TVertex = (vertex *) malloc(sizeof(vertex)*nbPoints+5);
+	TSimplex= (vertex *) malloc(sizeof(vertex)*nbPoints);
 	assert(TVertex != NULL);
 	selectPoints(nbPoints);
 	printf("Veuillez choisir une option : Rien encore\n"); 
