@@ -4,7 +4,7 @@
 #include <time.h>
 
 #include "FilePrio.h"
-#include "Triangle.h"
+#include "Simplex.h"
 
 #define ALLOUER(X,NB) do if ( (X = malloc(sizeof(*(X)) * (NB))) == 0 )\
                              { fprintf(stderr, "Plus de memoire\n") ; \
@@ -34,7 +34,7 @@ int nbPoints = 2000;
 GLint GlobalePrimitiveDessin;
 
 /*! Tableau gobal des sommets */
-vertex *T = NULL;
+Vertex *T = NULL;
 
 
 ///Début des fonctions /////
@@ -67,9 +67,9 @@ void selectPoints(int nbPoints)
 }
 
 
-/*vertex* findFirstLexico(vertex * T){
+/*Vertex* findFirstLexico(Vertex * T){
 	int i;
-	vertex* temp = T;
+	Vertex* temp = T;
 	for(i = 1; i < nbPoints; i++){
 		if(T[i].coords[0] < temp->coords[0]){
 			temp= &T[i];
@@ -86,7 +86,7 @@ void selectPoints(int nbPoints)
 //////////////////////////////////////// Affichages ///////////////////////////////////////
  /*warning Particularite: "callback function", ie pas d'argument transmis... Tout en global, yeurk!
  */
-void displayTriangle(void)
+void displaySimplex(void)
 {
 	int n = nbPoints;
 
@@ -132,11 +132,11 @@ int main(int argc, char **argv)
 		}
 	}
 
-	vertex * pt1;
+	Vertex * pt1;
 	ALLOUER(pt1,1);
-	vertex * pt2;
+	Vertex * pt2;
 	ALLOUER(pt2,1);
-	vertex * pt3;
+	Vertex * pt3;
 	ALLOUER(pt3,1);
 	pt1->coords[0] = 1; 
 	pt1->coords[1] = 1;
@@ -148,16 +148,16 @@ int main(int argc, char **argv)
 	pt3->coords[1] = 2;
 	pt3->coords[2] = 0;
 	/*fprintf(stderr, "orientation: %d\n", orientationPolaire(pt3,pt2,pt1));
-	vertex * res = minLexico(pt1,pt2,pt3);
+	Vertex * res = minLexico(pt1,pt2,pt3);
 	fprintf(stderr, "%f %f %f \n", res->coords[0], res->coords[1], res->coords[2]);*/
-	Triangle *t = newTriangleWithPoint(pt2,pt1,pt3);
+	Simplex *t = newSimplexWithPoint(pt2,pt1,pt3);
 	fprintf(stderr, "%f %f %f \n", t->m_tab_points[0]->coords[0], t->m_tab_points[0]->coords[1], t->m_tab_points[0]->coords[2]);
 	fprintf(stderr, "%f %f %f \n", t->m_tab_points[1]->coords[0], t->m_tab_points[1]->coords[1], t->m_tab_points[1]->coords[2]);
 	fprintf(stderr, "%f %f %f \n", t->m_tab_points[2]->coords[0], t->m_tab_points[2]->coords[1], t->m_tab_points[2]->coords[2]);
 
 	//int option = 0;
 	assert(nbPoints > 0);
-	T = (vertex *) malloc(sizeof(vertex)*nbPoints+1);
+	T = (Vertex *) malloc(sizeof(Vertex)*nbPoints+1);
 	assert(T != NULL);
 	selectPoints(nbPoints);
 	printf("Veuillez choisir une option : Rien encore\n"); 
@@ -170,7 +170,7 @@ int main(int argc, char **argv)
 	glutCreateWindow("My first OpenGL window...");  // Là, c'est une incantation (sic)* de fenêtre !
 	winInit(); 
 	
-	glutDisplayFunc(displayTriangle);
+	glutDisplayFunc(displaySimplex);
   	glutMainLoop();  
   
   return EXIT_SUCCESS;  

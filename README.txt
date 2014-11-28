@@ -1,14 +1,13 @@
 
 Triangle
 	vertex tabPoints[3] //trié par ordre trigo
-	vertex tabPointsVoisins[3] //trié selon le tab voisins, voisin opposé au point
-	List pointAppartenant // Liste de point appartenant au triangle
+	Triangle tabPointsVoisins[3] //trié selon le tab voisins, voisin opposé au point //Face
+	List pointAppartenant // Liste de point appartenant au triangle // SEUL LE PREMIER A UNE IMPORTANCE
+	int hauteur; //hauteur maximum des points par rapport à ce triangle
+	booleen isEmpty;
 
 Vertex
 	double coords[3] //tableau de coordonnée
-	int hauteur; //hauteur par rapport au triangle auquel il appartient
-	triangle //Pinte'ur vers le triangle auquel il appartient (pas obligatoire)
-	bool bool //(Pas sur)
 
 //Creation des deux triangles de départ
 	- division du carré en deux

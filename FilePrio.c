@@ -12,11 +12,11 @@
 ////////////////////////////// FILE DE PRIORITE //////////////////////////////////////////////////////
 
 void initFDP(fdp * f){
-	ALLOUER(f->tableau_vertex, TAILLE_MAX);
+	ALLOUER(f->tableau_Vertex, TAILLE_MAX);
 	f->nbPoints = 0;
 }
 
-int ordreLexico(vertex *a, vertex *b) //en fonction de Z puis de Y puis de X
+int ordreLexico(Vertex *a, Vertex *b) //en fonction de Z puis de Y puis de X
 {
 	int i;
 	for (i = DIM; i >0; --i)
@@ -31,7 +31,7 @@ int ordreLexico(vertex *a, vertex *b) //en fonction de Z puis de Y puis de X
 	return EGAL_LEXICO;
 }
 
-void remplissageListeParTab(fdp *f, vertex * T, int nbPoints){
+void remplissageListeParTab(fdp *f, Vertex * T, int nbPoints){
 	int i;
 	for(i =0; i < nbPoints; i++){
 		insertionLexico(f, &T[i]);
@@ -39,13 +39,13 @@ void remplissageListeParTab(fdp *f, vertex * T, int nbPoints){
 }
 
 void upHeap(fdp *f, int position){
-	vertex* tmp;
+	Vertex* tmp;
 	int pospere = position /2;
-	while ((position>1) && (ordreLexico(f->tableau_vertex[position], f->tableau_vertex[pospere]) == INF_LEXICO))
+	while ((position>1) && (ordreLexico(f->tableau_Vertex[position], f->tableau_Vertex[pospere]) == INF_LEXICO))
 	{
-		tmp = f->tableau_vertex[pospere];
-		f->tableau_vertex[pospere] = f->tableau_vertex[position];
-		f->tableau_vertex[position] = tmp;
+		tmp = f->tableau_Vertex[pospere];
+		f->tableau_Vertex[pospere] = f->tableau_Vertex[position];
+		f->tableau_Vertex[position] = tmp;
 		position = pospere;
 		pospere = position/2;		
 	}
@@ -54,25 +54,25 @@ void upHeap(fdp *f, int position){
 
 void downHeap(fdp *f)
 {
-	vertex* temp;
+	Vertex* temp;
 	int position = 1;
 	int posfilsgauche = position*2;
 	int posfilsdroit = position*2+1;
 	int marqueurPosition;
 	
 	while(posfilsgauche <= f->nbPoints && posfilsdroit <= f->nbPoints+1 &&
-		 (ordreLexico(f->tableau_vertex[position], f->tableau_vertex[posfilsgauche]) == SUP_LEXICO ||
-		  ordreLexico(f->tableau_vertex[position], f->tableau_vertex[posfilsdroit]) == SUP_LEXICO))
+		 (ordreLexico(f->tableau_Vertex[position], f->tableau_Vertex[posfilsgauche]) == SUP_LEXICO ||
+		  ordreLexico(f->tableau_Vertex[position], f->tableau_Vertex[posfilsdroit]) == SUP_LEXICO))
 	{	
-		if(ordreLexico(f->tableau_vertex[posfilsgauche], f->tableau_vertex[posfilsdroit]) == SUP_LEXICO)
+		if(ordreLexico(f->tableau_Vertex[posfilsgauche], f->tableau_Vertex[posfilsdroit]) == SUP_LEXICO)
 		{
 			marqueurPosition = posfilsdroit;
 		}else{
 			marqueurPosition = posfilsgauche;
 		}
-		temp = f->tableau_vertex[marqueurPosition];
-		f->tableau_vertex[marqueurPosition] = f->tableau_vertex[position];
-		f->tableau_vertex[position] = temp;
+		temp = f->tableau_Vertex[marqueurPosition];
+		f->tableau_Vertex[marqueurPosition] = f->tableau_Vertex[position];
+		f->tableau_Vertex[position] = temp;
 		
 		position = marqueurPosition;
 		posfilsgauche = position*2;
@@ -80,22 +80,22 @@ void downHeap(fdp *f)
 	}
 }
 
-void insertionLexico(fdp *f, vertex *pt)
+void insertionLexico(fdp *f, Vertex *pt)
 {
 	if(f->nbPoints < TAILLE_MAX)
 	{		
 		f->nbPoints = f->nbPoints + 1;	
-		f->tableau_vertex[f->nbPoints] = pt;
+		f->tableau_Vertex[f->nbPoints] = pt;
 		upHeap(f, f->nbPoints);
 	}	
 
 }
 
-vertex* suppressionLexico(fdp *f)
+Vertex* suppressionLexico(fdp *f)
 {
-	vertex* pt;
-	pt = f->tableau_vertex[1];
-	f->tableau_vertex[1] = f->tableau_vertex[f->nbPoints];
+	Vertex* pt;
+	pt = f->tableau_Vertex[1];
+	f->tableau_Vertex[1] = f->tableau_Vertex[f->nbPoints];
 	f->nbPoints = f->nbPoints-1;
 
 	downHeap(f);
@@ -112,7 +112,7 @@ fdp * allouerFDP()
 
 void cleanFDP(fdp *f)
 {
-  free(f->tableau_vertex);
+  free(f->tableau_Vertex);
   f->nbPoints = 0;
 }
 
@@ -129,7 +129,7 @@ void affichageFDP(fdp * f)
 	for(i = 0; i < f->nbPoints; i++)
 	{
 		fprintf(stderr, "pt %d: ", i);
-		affichageVertex(f->tableau_vertex[i]);
-		//fprintf(stderr, "  %f - %f \n", f->tableau_vertex[i]->coords[0], f->tableau_vertex[i]->coords[1]);
+		affichageVertex(f->tableau_Vertex[i]);
+		//fprintf(stderr, "  %f - %f \n", f->tableau_Vertex[i]->coords[0], f->tableau_Vertex[i]->coords[1]);
 	}
 }

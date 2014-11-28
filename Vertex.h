@@ -10,17 +10,24 @@
 typedef struct s_vertex
 {
 	double coords[DIM];
-} vertex;
+} Vertex;
 
-double determinant(const vertex *A, const vertex *B, const vertex *C);
+double determinant(const Vertex *A, const Vertex *B, const Vertex *C);
 //Retourne l'orientation entre 3 points (pour le 1er quadrant)
-int orientationPolaire(const vertex *A, const vertex *B, const vertex *C);
+int orientationPolaire(const Vertex *A, const Vertex *B, const Vertex *C);
 //Teste si le point est compris dans un triangle
-//int estDansTriangle(vertex *a, vertex *b, vertex *c, vertex *pt);
-int estAuDessusX(vertex* a, vertex *b);
-int estAuDessusY(vertex* a, vertex* b);
-int estAuDessusZ(vertex* a, vertex* b);
-int egalite(vertex* a, vertex* b);
-double calculLongueur(vertex* a, vertex* b);
-void affichageVertex(vertex * v);
-vertex * minLexico(vertex *a, vertex *b, vertex *c);
+//int estDansTriangle(Vertex *a, Vertex *b, Vertex *c, Vertex *pt);
+
+int estAuDessusX(Vertex* a, Vertex *b);
+
+int estAuDessusY(Vertex* a, Vertex* b);
+
+int estAuDessusZ(Vertex* a, Vertex* b);
+
+int egalite(Vertex* a, Vertex* b);
+
+double calculLongueur(Vertex* a, Vertex* b);
+
+void affichageVertex(Vertex * v);
+
+Vertex * minLexico(Vertex *a, Vertex *b, Vertex *c);

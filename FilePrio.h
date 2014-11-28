@@ -14,7 +14,7 @@
 
 typedef struct
 {
-  vertex** tableau_vertex;
+  Vertex** tableau_Vertex;
   int nbPoints;
 } fdp;
 
@@ -22,17 +22,17 @@ typedef struct
 
 void initFDP(fdp * f);
 
-int ordreLexico(vertex *a, vertex *b);
+int ordreLexico(Vertex *a, Vertex *b);
 
 void upHeap(fdp *f, int position);
 
 void downHeap(fdp *f);
 
-void insertionLexico(fdp *f, vertex *pt);
+void insertionLexico(fdp *f, Vertex *pt);
 
-vertex* suppressionLexico(fdp *f);
+Vertex* suppressionLexico(fdp *f);
 
-void remplissageListeParTab(fdp *f, vertex * T, int nbPoints);
+void remplissageListeParTab(fdp *f, Vertex * T, int nbPoints);
 
 void creationPointsFDP(fdp *f);
 
