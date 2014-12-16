@@ -6,11 +6,6 @@
 #include "FilePrio.h"
 #include "Simplex.h"
 
-#define ALLOUER(X,NB) do if ( (X = malloc(sizeof(*(X)) * (NB))) == 0 )\
-                             { fprintf(stderr, "Plus de memoire\n") ; \
-                                exit(1); } \
-                      while(0)
-
 /*! variable externe permettant de lire les parametres sur le ligne de commande.*/
 extern char *optarg;
 
@@ -35,7 +30,8 @@ GLint GlobalePrimitiveDessin;
 
 /*! Tableau gobal des sommets */
 Vertex *TVertex = NULL;
-Vertex *TSimplex = NULL;
+Simplex *TSimplex = NULL;
+int nbSimplexAjoute = 0;
 
 
 ///Début des fonctions /////
@@ -96,31 +92,71 @@ void selectPoints(int nbPoints)
 void displaySimplex(void)
 {
 	int n = nbPoints;
+	int i;
 
 	glColor3f(0.0, 0.0, 0.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 	
-	glBegin(GL_LINES);
+	/*glBegin(GL_LINES);
 	
 	glColor3f(1.0, 1.0, 1.0);
-	glVertex2f(TVertex[0].coords[0], TVertex[0].coords[1]);glVertex2f(TVertex[1].coords[0], TVertex[1].coords[1]);
-	glVertex2f(TVertex[1].coords[0], TVertex[1].coords[1]);glVertex2f(TVertex[2].coords[0], TVertex[2].coords[1]);
-	glVertex2f(TVertex[2].coords[0], TVertex[2].coords[1]);glVertex2f(TVertex[0].coords[0], TVertex[0].coords[1]);
+	
+	for(i = 0; i < nbSimplexAjoute; i++)
+	{
+		glVertex2f(TVertex[0].coords[0], TVertex[0].coords[1]);
+		glVertex2f(TVertex[1].coords[0], TVertex[1].coords[1]);
+	}
 
-	glEnd();
+	glEnd();*/
+
+	for(i = 0; i < nbSimplexAjoute; i++)
+	{
+		affichageSimplex2D(&TSimplex[i]);
+	}
 
 	glBegin(GL_POINTS);
 
-	while (--n >= 0){
+	glColor3f(1.0, 0.0, 0.0);
+	affichage2DList(TSimplex[0].m_list_candidats);
+	
+	glColor3f(0.0, 1.0, 0.0);
+	affichage2DList(TSimplex[1].m_list_candidats);
+
+	/*while (--n >= 0){
 		glColor3f(1.0, 0, 0);
-		affichageVertex(&TVertex[n]);
+		//affichageVertex(&TVertex[n]);
 		glVertex2f(TVertex[n].coords[0], TVertex[n].coords[1]);
-	}
+	}*/
+
 	glEnd();
 
 	glFlush();
 }
 
+
+void initialisePremiersSimplex()
+{
+	fprintf(stderr, "----- Initialisation Premier Simplex -----\n");
+	affichageVertex(&TVertex[0]);
+	affichageVertex(&TVertex[1]);
+	affichageVertex(&TVertex[2]);
+	affichageVertex(&TVertex[3]);
+	ajoutPointsSimplex(&TSimplex[0], &TVertex[0], &TVertex[1], &TVertex[2]);
+	ajoutPointsSimplex(&TSimplex[1], &TVertex[1], &TVertex[2], &TVertex[3]);
+	
+	nbSimplexAjoute = 2;
+}
+
+List* listerVertex()
+{
+	List * l =newList();
+	int i;
+	for(i = 4; i < nbPoints+4; i++)
+	{
+		lstAdd(l, &TVertex[i]);
+	}
+	return l;
+}
 
 /*! \brief Fonction principale: on peut choisir le nombre de points
  * en utilisant l'option "-nX" où X est un entier strictement
@@ -152,16 +188,43 @@ int main(int argc, char **argv)
 		}
 	}
 
+	Vertex pt1;
+	pt1.coords[0] = 0;
+	pt1.coords[1] = 0;
+	pt1.coords[2] = 0;
+	Vertex pt2;
+	pt2.coords[0] = 2;
+	pt2.coords[1] = 0;
+	pt2.coords[2] = 2;
+	Vertex pt3;
+	pt3.coords[0] = 0;
+	pt3.coords[1] = 2;
+	pt3.coords[2] = 2;
+	Simplex* s = newSimplexWithPoint( &pt1, &pt2, &pt3 );
+	
+	Vertex pt4;
+	pt4.coords[0] = 1;
+	pt4.coords[1] = 1;
+	pt4.coords[2] = 3;
+	fprintf(stderr, "Calcul hauteur: %f\n", calculHauteur(s, &pt4));
+
 
 	//int option = 0;
 	assert(nbPoints > 0);
 	fprintf(stderr,"nbPoints = %d\n", nbPoints);
 	TVertex = (Vertex *) malloc(sizeof(Vertex)*nbPoints+5);
-	TSimplex= (Vertex *) malloc(sizeof(Vertex)*nbPoints);
+	TSimplex = (Simplex *) malloc(sizeof(Simplex)*nbPoints);
+
 	assert(TVertex != NULL);
 	selectPoints(nbPoints);
 	printf("Veuillez choisir une option : Rien encore\n"); 
 	
+	initialisePremiersSimplex();
+	List *l = listerVertex();
+	fprintf(stderr, "liste vertex: %d\n", lstCount(l));
+	reattributionPoints(&TSimplex[0], &TSimplex[1], l);
+	fprintf(stderr, "S1: %d   S2: %d\n", lstCount(TSimplex[0].m_list_candidats), lstCount(TSimplex[1].m_list_candidats));
+
 	//clock_t temps;
 	
 	glutInit(&argc, argv);  

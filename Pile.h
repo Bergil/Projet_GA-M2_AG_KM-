@@ -5,7 +5,9 @@
 
 typedef struct s_pile
 {
-	
-}Pile;
+	Node* First;
+	Node* Last;
+	int m_nb_elements;	
+} Pile;
 
 #endif

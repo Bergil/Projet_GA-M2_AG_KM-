@@ -2,6 +2,9 @@
 #pragma once
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "Tool.h"
+
 #define DIM 3
 #define ADROITE 1
 #define ALIGNE 0
@@ -11,6 +14,9 @@ typedef struct s_vertex
 {
 	double coords[DIM];
 } Vertex;
+
+Vertex * newVertex();
+Vertex * newVertexWithCoords(double x, double y, double z);
 
 double determinant(const Vertex *A, const Vertex *B, const Vertex *C);
 //Retourne l'orientation entre 3 points (pour le 1er quadrant)

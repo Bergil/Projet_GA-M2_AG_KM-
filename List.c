@@ -1,6 +1,8 @@
 ﻿#include "List.h"
 #include <stdio.h>
 
+#include "Vertex.h"
+
 List* newList()
 {
 	List* L = (List*) malloc(sizeof(List));
@@ -154,4 +156,21 @@ void lstRegressionTest()
 	assert(L->Count == 0);
 	delList(L);
 	printf("============== lstRegressionTest End ================\n");
+}
+
+
+void affichage2DList(List* l)
+{
+	glBegin(GL_POINTS);
+
+	Node * node_temp = l->First;
+	Vertex * vertex_temp;
+	while(node_temp != NULL)
+	{
+		vertex_temp = nodeGetData(node_temp);
+		glVertex2f(vertex_temp->coords[0], vertex_temp->coords[1]);
+		node_temp = nodeGetNext(node_temp);
+	}
+
+	glEnd();
 }

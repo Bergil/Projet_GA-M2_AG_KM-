@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 
+#include <GL/glut.h> 
 #include "Node.h"
 
 /** @defgroup List List
@@ -100,5 +101,5 @@ void lstRegressionTest();
 
 /** @}
 **/
-
+void affichage2DList(List* l);
 #endif
