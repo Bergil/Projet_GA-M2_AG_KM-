@@ -31,6 +31,7 @@ typedef struct s_simplex
 	struct Simplex* m_tab_voisins[3]; /*!< tableau de voisins */
 	List* m_list_candidats; /*!< pointeur sur un point */
 	double m_hauteur; /*!< hauteur maximum des ses points par rapport à ce simplex */
+	int m_afficher;
 	EquationPlan m_equation_plan; /*!< equation du plan formé par les pints du simplex */
 } Simplex;
 
@@ -56,6 +57,16 @@ Simplex* newSimplex();
  */
 Simplex* newSimplexWithPoint(Vertex* p1, Vertex* p2, Vertex* p3);
 
+/**
+ * \fn void ajoutPointsSimplex(Simplex* t, Vertex* p1, Vertex* p2, Vertex* p3)
+ *
+ * \brief Ajoute les nouveaux points au simplex
+ *
+ * \param t Pointeur sur un simplex
+ * \param p1 Pointeur sur un nouveau point
+ * \param p2 Pointeur sur un nouveau point
+ * \param p3 Pointeur sur un nouveau point
+ */
 void ajoutPointsSimplex(Simplex* t, Vertex* p1, Vertex* p2, Vertex* p3);
 
 /**
@@ -109,7 +120,7 @@ void ajoutPointCandidatQueue(Simplex* t, Vertex *pt);
 void ajoutPointCandidatTete(Simplex* t, Vertex *pt);
 
 /**
- * \fn void reatributionPoints(Simplex *t1, Simplex* t2, List *l)
+ * \fn void reattributionPoints2Simplex(Simplex *t1, Simplex* t2, List *l)
  *
  * \brief Redistribue les points de la liste au deux nouveaux simplex
  *
@@ -117,7 +128,19 @@ void ajoutPointCandidatTete(Simplex* t, Vertex *pt);
  * \param t2 Pointeur sur un simplex
  * \param l Liste de points
  */
-void reattributionPoints(Simplex *t1, Simplex* t2, List *l);
+void reattributionPoints2Simplex(Simplex *t1, Simplex* t2, List *l);
+
+/**
+ * \fn void reattributionPoints3Simplex(Simplex *t1, Simplex* t2, Simplex* t3, List *l)
+ *
+ * \brief Redistribue les points de la liste au deux nouveaux simplex
+ *
+ * \param t1 pointeur sur un Simplex 
+ * \param t2 Pointeur sur un simplex
+ * \param t3 Pointeur sur un simplex
+ * \param l Liste de points
+ */
+void reattributionPoints3Simplex(Simplex *t1, Simplex* t2, Simplex* t3, List *l);
 
 /**
  * \fn double calculHauteur(Simplex *s, Vertex *pt)
@@ -131,9 +154,24 @@ void reattributionPoints(Simplex *t1, Simplex* t2, List *l);
  */
 double calculHauteur(Simplex *s, Vertex *pt);
 
-
-
+/**
+ * \fn void affichageSimplex2D(Simplex * s)
+ *
+ * \brief Affichage du simplex dans un espace en deux dimmensions
+ *
+ * \param s pointeur sur un simplex
+ */
 void affichageSimplex2D(Simplex * s);
+void affichageSimplex3D(Simplex * s);
+
+/**
+ * \fn void getHauteur(Simplex * s)
+ *
+ * \brief Retourne la hauteur du simplex
+ *
+ * \param s pointeur sur un simplex
+ */
+float getHauteur(Simplex * s);
 
 
 #endif

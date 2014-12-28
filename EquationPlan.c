@@ -45,9 +45,10 @@ void resolutionEquation(EquationPlan* eq, Vertex* pt1, Vertex* pt2, Vertex* pt3)
 									+yC*mineurDeux
 									+zC*mineurTrois
 									+termeIndependant);*/
-	fprintf(stderr, "--- Start Resolution equation --- \n");
+	
+	/*fprintf(stderr, "--- Start Resolution equation --- \n");
 	affichageVertex(pt1);
 	affichageVertex(pt2);
 	affichageVertex(pt3);
-	fprintf(stderr, "equation: %fx + %fy + %fz + %f\n", eq->m_a ,eq->m_b ,eq->m_c ,eq->m_d ); 
+	fprintf(stderr, "equation: %fx + %fy + %fz + %f\n", eq->m_a ,eq->m_b ,eq->m_c ,eq->m_d ); */
 }

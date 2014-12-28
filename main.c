@@ -31,10 +31,11 @@ GLint GlobalePrimitiveDessin;
 /*! Tableau gobal des sommets */
 Vertex *TVertex = NULL;
 Simplex *TSimplex = NULL;
+fdp * f = NULL;
 int nbSimplexAjoute = 0;
 
 
-///Début des fonctions /////
+///DÃ©but des fonctions /////
 double myRandom (double a, double b)
 {
   double tmp = rand(); /* long int in [0, RAND_MAX] */
@@ -89,58 +90,100 @@ void selectPoints(int nbPoints)
 //////////////////////////////////////// Affichages ///////////////////////////////////////
  /*warning Particularite: "callback function", ie pas d'argument transmis... Tout en global, yeurk!
  */
-void displaySimplex(void)
+
+void displaySimplex2D(void)
 {
-	int n = nbPoints;
 	int i;
 
 	glColor3f(0.0, 0.0, 0.0);
 	glClear(GL_COLOR_BUFFER_BIT);
-	
-	/*glBegin(GL_LINES);
-	
-	glColor3f(1.0, 1.0, 1.0);
-	
-	for(i = 0; i < nbSimplexAjoute; i++)
-	{
-		glVertex2f(TVertex[0].coords[0], TVertex[0].coords[1]);
-		glVertex2f(TVertex[1].coords[0], TVertex[1].coords[1]);
-	}
-
-	glEnd();*/
 
 	for(i = 0; i < nbSimplexAjoute; i++)
 	{
 		affichageSimplex2D(&TSimplex[i]);
 	}
 
-	glBegin(GL_POINTS);
+	glFlush();
+}
 
-	glColor3f(1.0, 0.0, 0.0);
-	affichage2DList(TSimplex[0].m_list_candidats);
+
+
+double angle = 0;
+
+
+//Called when the window is resized
+void handleResize(int w, int h) 
+{
+	//Tell OpenGL how to convert from coordinates to pixel values
+	glViewport(0, 0, w, h);
 	
-	glColor3f(0.0, 1.0, 0.0);
-	affichage2DList(TSimplex[1].m_list_candidats);
+	glMatrixMode(GL_PROJECTION); //Switch to setting the camera perspective
+	
+	//Set the camera perspective
+	glLoadIdentity(); //Reset the camera
+	gluPerspective(angle,				  //The camera angle
+				   (double)w / (double)h, //The width-to-height ratio
+				   1.0,				   //The near z clipping coordinate
+				   200.0);				//The far z clipping coordinate
+}
 
-	/*while (--n >= 0){
-		glColor3f(1.0, 0, 0);
-		//affichageVertex(&TVertex[n]);
-		glVertex2f(TVertex[n].coords[0], TVertex[n].coords[1]);
-	}*/
+void init(int argc, char** argv)
+{
+	//Initialize GLUT
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
+	glutInitWindowSize(600, 600); //Window size
+	glutCreateWindow("Introduction to OpenGL"); //Create a window
 
-	glEnd();
+	//glMaterial();
+	glEnable(GL_DEPTH_TEST); //Make sure 3D drawing works when one object is in front of another
+  	//glEnable(GL_LIGHTING); 	// Active l'Ã©clairage
+  	//glEnable(GL_LIGHT0); 	// Allume la lumiÃ¨re nÂ°1
+}
+
+void update(int value) {
+    angle += 1.0f;
+    if (angle > 360) {
+        angle -= 360;
+    }
+    glutPostRedisplay();
+
+    glutTimerFunc(25, update, 0);
+}
+
+//Draws the 3D scene
+void displaySimplex3D()
+{
+    //Clear screen
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW); //Switch to the drawing perspective
+    glLoadIdentity(); //Reset the drawing perspective
+
+	int i;
+
+	glRotatef(-angle, 1.0f, 0.0f, 0.0f);
+	glColor3f(0.0, 0.0, 0.0);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	for(i = 0; i < nbSimplexAjoute; i++)
+	{
+		affichageSimplex3D(&TSimplex[i]);
+	}
 
 	glFlush();
+	
+	glEnd();
+	glutSwapBuffers(); //Send scene to the screen to be shown
 }
 
 
 void initialisePremiersSimplex()
 {
 	fprintf(stderr, "----- Initialisation Premier Simplex -----\n");
-	affichageVertex(&TVertex[0]);
+	/*affichageVertex(&TVertex[0]);
 	affichageVertex(&TVertex[1]);
 	affichageVertex(&TVertex[2]);
-	affichageVertex(&TVertex[3]);
+	affichageVertex(&TVertex[3]);*/
 	ajoutPointsSimplex(&TSimplex[0], &TVertex[0], &TVertex[1], &TVertex[2]);
 	ajoutPointsSimplex(&TSimplex[1], &TVertex[1], &TVertex[2], &TVertex[3]);
 	
@@ -158,8 +201,48 @@ List* listerVertex()
 	return l;
 }
 
+void divisionSimplex(Simplex * s)
+{
+	fprintf(stderr, "Je suis au debut de division \n");
+	Vertex * v = nodeGetData(s->m_list_candidats->First);
+	//creer les 3 nouveaux
+	Simplex * s1 = newSimplexWithPoint(s->m_tab_points[0], s->m_tab_points[1], v);
+	Simplex * s2 = newSimplexWithPoint(s->m_tab_points[1], s->m_tab_points[2], v);
+	Simplex * s3 = newSimplexWithPoint(s->m_tab_points[2], s->m_tab_points[0], v);
+	reattributionPoints3Simplex(s1, s2, s3, s->m_list_candidats);
+
+	//Suppression du point choisis dans la liste
+	lstPopFront(s->m_list_candidats);
+
+	//supprimer du tab
+	s->m_afficher = 0;
+
+	//ajouter au tab
+	TSimplex[nbSimplexAjoute] = *s1;
+	nbSimplexAjoute++;
+	TSimplex[nbSimplexAjoute] = *s2;
+	nbSimplexAjoute++;
+	TSimplex[nbSimplexAjoute] = *s3;
+	nbSimplexAjoute++;
+
+	//ajouter a la fdp si le simplex a des points candidats
+	if(s1->m_list_candidats->First != NULL){
+		insertSimplex(f, s1);
+		fprintf(stderr, "*** --- J'ajoute S1\n");
+	}
+	if(s2->m_list_candidats->First != NULL){
+		insertSimplex(f, s2);
+		fprintf(stderr, "*** --- J'ajoute S2\n");
+	}
+	if(s3->m_list_candidats->First != NULL){
+		insertSimplex(f, s3);
+		fprintf(stderr, "*** --- J'ajoute S3\n");
+	}
+}
+
+
 /*! \brief Fonction principale: on peut choisir le nombre de points
- * en utilisant l'option "-nX" où X est un entier strictement
+ * en utilisant l'option "-nX" oÃ¹ X est un entier strictement
  * positif.
  * \remark Mettre opterr a 0 equivaut a supprimer volontairement les messages d'erreur renvoyes par getopt 
  * lors de la lecture d'options non prevus sur la ligne de commande. Dans ces cas, l'erreur est traitee grace au
@@ -188,7 +271,8 @@ int main(int argc, char **argv)
 		}
 	}
 
-	Vertex pt1;
+	//############### TEST ###################
+	/*Vertex pt1;
 	pt1.coords[0] = 0;
 	pt1.coords[1] = 0;
 	pt1.coords[2] = 0;
@@ -206,14 +290,13 @@ int main(int argc, char **argv)
 	pt4.coords[0] = 1;
 	pt4.coords[1] = 1;
 	pt4.coords[2] = 3;
-	fprintf(stderr, "Calcul hauteur: %f\n", calculHauteur(s, &pt4));
-
+	fprintf(stderr, "Calcul hauteur: %f\n", calculHauteur(s, &pt4));*/
 
 	//int option = 0;
 	assert(nbPoints > 0);
 	fprintf(stderr,"nbPoints = %d\n", nbPoints);
 	TVertex = (Vertex *) malloc(sizeof(Vertex)*nbPoints+5);
-	TSimplex = (Simplex *) malloc(sizeof(Simplex)*nbPoints);
+	TSimplex = (Simplex *) malloc(sizeof(Simplex)*nbPoints*4); //x3 normalement
 
 	assert(TVertex != NULL);
 	selectPoints(nbPoints);
@@ -222,19 +305,41 @@ int main(int argc, char **argv)
 	initialisePremiersSimplex();
 	List *l = listerVertex();
 	fprintf(stderr, "liste vertex: %d\n", lstCount(l));
-	reattributionPoints(&TSimplex[0], &TSimplex[1], l);
+	reattributionPoints2Simplex(&TSimplex[0], &TSimplex[1], l);
 	fprintf(stderr, "S1: %d   S2: %d\n", lstCount(TSimplex[0].m_list_candidats), lstCount(TSimplex[1].m_list_candidats));
+
+	f = allouerFDP();
+	insertSimplex(f, &TSimplex[0]);
+	insertSimplex(f, &TSimplex[1]);
+	
+	while(f->nbSimplex > 0)
+	{
+		fprintf(stderr, "Juste avant la division \n");
+		fprintf(stderr, "Taille de la fdp: %d\n", f->nbSimplex);
+		divisionSimplex(getTete(f));
+	}
+	//affichageHauteurFDP(f);
+
+	destructionFDP(f);
 
 	//clock_t temps;
 	
 	glutInit(&argc, argv);  
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);  
 	glutInitWindowPosition(5,5);  
-	glutInitWindowSize(500, 500);  
-	glutCreateWindow("My first OpenGL window...");  // Là, c'est une incantation (sic)* de fenêtre !
-	winInit(); 
-	
-	glutDisplayFunc(displaySimplex);
+	glutInitWindowSize(600, 600);  
+	glutCreateWindow("My first OpenGL window...");  // LÃ , c'est une incantation (sic)* de fenÃªtre !
+	winInit();
+	glutDisplayFunc(displaySimplex2D);
+
+	//##### 3D
+	// init(argc, argv);
+	// glutDisplayFunc(displaySimplex3D);
+
+	// glutReshapeFunc(handleResize);    
+ //    glutTimerFunc(25, update, 0);
+    //#####
+
   	glutMainLoop();  
   
   return EXIT_SUCCESS;  
