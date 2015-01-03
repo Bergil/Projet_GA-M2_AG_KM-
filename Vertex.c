@@ -97,6 +97,19 @@ void affichageVertex(Vertex * v)
 	fprintf(stderr, "Point : %f %f %f\n", v->coords[0], v->coords[1], v->coords[2]);
 }
 
+void affichageVertex2D(Vertex * v)
+{
+	glBegin(GL_POINTS);
+	
+	glColor3f(1.0, 0.0, 0.0);
+	
+	//fprintf(stderr, "Je viens la \n");
+	glVertex2f(v->coords[0], v->coords[1]);
+	//fprintf(stderr, "Je sors la \n");
+
+	glEnd();
+}
+
 Vertex * minLexico(Vertex *a, Vertex *b, Vertex *c)
 {
 	int i;

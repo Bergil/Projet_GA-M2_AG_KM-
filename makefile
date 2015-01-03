@@ -12,7 +12,7 @@ all: main
 
 %.o : %.c
 	$(CC) $(GL_INCLUDE) $(CFLAGS) $<
-main: main.o FilePrio.o List.o Vertex.o Node.o Simplex.o EquationPlan.o
+main: main.o FilePrio.o List.o Vertex.o Node.o Simplex.o EquationPlan.o Pile.o geom.o
 	$(CC) $(GL_LIBDIR) $^ $(GL_LIBRARIES) -o $@
 	
 #

@@ -28,7 +28,7 @@
 typedef struct s_simplex
 {
 	Vertex* m_tab_points[3]; /*!< tableau de points */
-	struct Simplex* m_tab_voisins[3]; /*!< tableau de voisins */
+	struct s_simplex* m_tab_voisins[3]; /*!< tableau de voisins */
 	List* m_list_candidats; /*!< pointeur sur un point */
 	double m_hauteur; /*!< hauteur maximum des ses points par rapport à ce simplex */
 	int m_afficher;
@@ -162,6 +162,14 @@ double calculHauteur(Simplex *s, Vertex *pt);
  * \param s pointeur sur un simplex
  */
 void affichageSimplex2D(Simplex * s);
+
+/**
+ * \fn void affichageSimplex3D(Simplex * s)
+ *
+ * \brief Affichage du simplex dans un espace en trois dimmensions
+ *
+ * \param s pointeur sur un simplex
+ */
 void affichageSimplex3D(Simplex * s);
 
 /**
@@ -173,5 +181,14 @@ void affichageSimplex3D(Simplex * s);
  */
 float getHauteur(Simplex * s);
 
+void copy(Simplex * s1, Simplex * s2);
+
+void ajouteVoisin(Simplex * s, Simplex * s_voisin);
+
+int egaliteSimplex(Simplex * s1, Simplex * s2);
+
+void affichageSimplex(Simplex * s);
+
+int indiceDiff(Simplex * s1, Simplex * s2);
 
 #endif

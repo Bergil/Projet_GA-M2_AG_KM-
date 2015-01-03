@@ -4,8 +4,8 @@
 
 ////////////////////////////// FILE DE PRIORITE //////////////////////////////////////////////////////
 
-void initFDP(fdp * f){
-	ALLOUER(f->tableau_Simplex, TAILLE_MAX);
+void initFDP(fdp * f, int nb_element){
+	ALLOUER(f->tableau_Simplex, nb_element);
 	f->nbSimplex = 0;
 }
 
@@ -31,14 +31,14 @@ void upHeap(fdp *f, int position){
 	int pospere = position /2;
 	while ((position>1) && (ordreHauteur(f->tableau_Simplex[position], f->tableau_Simplex[pospere]) == INF_HAUTEUR))
 	{
-		fprintf(stderr, "Dans le while de l'insertion\n");
+		//fprintf(stderr, "Dans le while de l'insertion\n");
 		tmp = f->tableau_Simplex[pospere];
 		f->tableau_Simplex[pospere] = f->tableau_Simplex[position];
 		f->tableau_Simplex[position] = tmp;
 		position = pospere;
 		pospere = position/2;		
 	}
-	fprintf(stderr, "position: %d\n", position);
+	//fprintf(stderr, "position: %d\n", position);
 }
 
 void downHeap(fdp *f)
@@ -77,7 +77,7 @@ void insertSimplex(fdp *f, Simplex *s)
 		f->nbSimplex = f->nbSimplex + 1;
 		//Ajoute le simplex au tableau	
 		f->tableau_Simplex[f->nbSimplex] = s;
-		fprintf(stderr, "*** insert *** hauteur: %f\n", getHauteur(s));
+		//fprintf(stderr, "*** insert *** hauteur: %f\n", getHauteur(s));
 		//On le remonte
 		upHeap(f, f->nbSimplex);
 		//f->nbSimplex = f->nbSimplex + 1;
@@ -91,17 +91,17 @@ Simplex* getTete(fdp *f)
 	s = f->tableau_Simplex[1];
 	f->tableau_Simplex[1] = f->tableau_Simplex[f->nbSimplex];
 	f->nbSimplex = f->nbSimplex-1;
-	fprintf(stderr, "avant downHeap\n");
+	//fprintf(stderr, "avant downHeap\n");
 	downHeap(f);
-	fprintf(stderr, "apres downheap\n");
+	//fprintf(stderr, "apres downheap\n");
 	return s;
 }
 
-fdp * allouerFDP()
+fdp * allouerFDP(int nb_element)
 {
   fdp* f;
   ALLOUER(f, 1);
-  initFDP(f);
+  initFDP(f, nb_element);
   return f;
 }
 
@@ -128,4 +128,35 @@ void affichageHauteurFDP(fdp * f)
 		fprintf(stderr, "*** Aff *** hauteur: %f\n", getHauteur(f->tableau_Simplex[i]));
 		//fprintf(stderr, "  %f - %f \n", f->tableau_Simplex[i]->coords[0], f->tableau_Simplex[i]->coords[1]);
 	}
+}
+
+
+
+void supprElement(fdp * f, Simplex * s)
+{
+	int i;
+	for(i = 1; i <= f->nbSimplex; i++)
+	{
+		if(egaliteSimplex(f->tableau_Simplex[i], s) == 1)
+			break;
+	}
+	while(i*2+1 <= f->nbSimplex)
+	{
+		if(i*2+1 == f->nbSimplex+1)
+		{
+			f->tableau_Simplex[i] = f->tableau_Simplex[i*2];
+			i = i*2;
+		}
+		else if(f->tableau_Simplex[i*2+1]->m_hauteur >= f->tableau_Simplex[i*2]->m_hauteur)
+		{
+			f->tableau_Simplex[i] = f->tableau_Simplex[i*2+1];
+			i = i*2+1;
+		}
+		else
+		{
+			f->tableau_Simplex[i] = f->tableau_Simplex[i*2];
+			i = i*2;
+		}
+	}
+	f->nbSimplex--;
 }

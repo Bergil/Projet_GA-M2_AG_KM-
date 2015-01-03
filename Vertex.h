@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <GL/glut.h> 
 #include "Tool.h"
 
 #define DIM 3
@@ -35,5 +36,7 @@ int egalite(Vertex* a, Vertex* b);
 double calculLongueur(Vertex* a, Vertex* b);
 
 void affichageVertex(Vertex * v);
+
+void affichageVertex2D(Vertex * v);
 
 Vertex * minLexico(Vertex *a, Vertex *b, Vertex *c);

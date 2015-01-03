@@ -130,9 +130,9 @@ void ajoutPointsSimplex(Simplex* t, Vertex* p1, Vertex* p2, Vertex* p3)
 		}
 	}
 
-	t->m_tab_points[0] = p1;
-	t->m_tab_points[1] = p2;
-	t->m_tab_points[2] = p3;
+	// t->m_tab_points[0] = p1;
+	// t->m_tab_points[1] = p2;
+	// t->m_tab_points[2] = p3;
 
 	t->m_tab_voisins[0] = NULL;
 	t->m_tab_voisins[1] = NULL;
@@ -170,13 +170,25 @@ void deleteSimplex(Simplex* t)
 int estDansSimplex(Simplex* t1, Vertex *pt1)
 {
 	Simplex t;
+	float temp_pt_z;
+	float temp_pt0_z;
+	float temp_pt1_z;
+	float temp_pt2_z;
+
 	t.m_tab_points[0] = t1->m_tab_points[0];
+	temp_pt0_z = t.m_tab_points[0]->coords[2];
 	t.m_tab_points[0]->coords[2] = 0.0;
+
 	t.m_tab_points[1] = t1->m_tab_points[1];
+	temp_pt1_z = t.m_tab_points[1]->coords[2];
 	t.m_tab_points[1]->coords[2] = 0.0;
+	
 	t.m_tab_points[2] = t1->m_tab_points[2];
+	temp_pt2_z = t.m_tab_points[2]->coords[2];
 	t.m_tab_points[2]->coords[2] = 0.0;
+	
 	Vertex pt = *pt1;
+	temp_pt_z = pt.coords[2];
 	pt.coords[2] = 0.0; 
 
     int orientationSimplex;
@@ -192,11 +204,25 @@ int estDansSimplex(Simplex* t1, Vertex *pt1)
 				if(	orientationPolaire(t.m_tab_points[0],t.m_tab_points[1],&pt) == ALIGNE || 
 					orientationPolaire(t.m_tab_points[1],t.m_tab_points[2],&pt) == ALIGNE ||
 				   	orientationPolaire(t.m_tab_points[2],t.m_tab_points[0],&pt) == ALIGNE)
+				{
+					pt.coords[2] = temp_pt_z;
+					t.m_tab_points[0]->coords[2] = temp_pt0_z;
+					t.m_tab_points[1]->coords[2] = temp_pt1_z;
+					t.m_tab_points[2]->coords[2] = temp_pt2_z;
 					return CONF;
+				}
+				pt.coords[2] = temp_pt_z;
+				t.m_tab_points[0]->coords[2] = temp_pt0_z;
+				t.m_tab_points[1]->coords[2] = temp_pt1_z;
+				t.m_tab_points[2]->coords[2] = temp_pt2_z;
 				return IN;
 			}
 		}
     }	
+	pt.coords[2] = temp_pt_z;
+	t.m_tab_points[0]->coords[2] = temp_pt0_z;
+	t.m_tab_points[1]->coords[2] = temp_pt1_z;
+	t.m_tab_points[2]->coords[2] = temp_pt2_z;
     return OUT;
 }
 
@@ -218,8 +244,15 @@ void reattributionPoints2Simplex(Simplex *t1, Simplex* t2, List *l)
 	Node *n_temp = l->First;
 	Vertex *v_temp = NULL;
 	Simplex *simplex_choisi = NULL;
+
+	fprintf(stderr, "----- REDISTR 2-----\n");
+	fprintf(stderr, "count: %d\n", l->Count);
+	fprintf(stderr, "t1: %d\n", t1->m_list_candidats->Count);
+	fprintf(stderr, "t2: %d\n", t2->m_list_candidats->Count);
+	
 	for(i = 0; i < l->Count; i++)
 	{
+		//fprintf(stderr, "count: %d\n", l->Count);
 		v_temp = nodeGetData(n_temp);
 
 		//Si le point est dans le premier simplex
@@ -237,7 +270,6 @@ void reattributionPoints2Simplex(Simplex *t1, Simplex* t2, List *l)
 
 		if(simplex_choisi != NULL)
 		{
-
 			hauteur = calculHauteur(simplex_choisi,v_temp);
 			if(hauteur > simplex_choisi->m_hauteur || simplex_choisi->m_hauteur == 0.0) //Si la hauteur du point est superieur
 			{
@@ -256,6 +288,9 @@ void reattributionPoints2Simplex(Simplex *t1, Simplex* t2, List *l)
 		n_temp = nodeGetNext(n_temp);
 	}	
 
+	fprintf(stderr, "t1: %d\n", t1->m_list_candidats->Count);
+	fprintf(stderr, "t2: %d\n", t2->m_list_candidats->Count);
+
 	//Pour tous les points de la liste
 	//On test l'appartenance au triangle
 	//On calcule sa hauteur
@@ -273,6 +308,13 @@ void reattributionPoints3Simplex(Simplex *t1, Simplex* t2, Simplex* t3, List *l)
 	Node *n_temp = l->First;
 	Vertex *v_temp = NULL;
 	Simplex *simplex_choisi = NULL;
+	
+	fprintf(stderr, "----- REDISTR 3-----\n");
+	fprintf(stderr, "count: %d\n", l->Count);
+	fprintf(stderr, "t1: %d\n", t1->m_list_candidats->Count);
+	fprintf(stderr, "t2: %d\n", t2->m_list_candidats->Count);
+	fprintf(stderr, "t3: %d\n", t3->m_list_candidats->Count);
+
 	for(i = 0; i < l->Count; i++)
 	{
 		v_temp = nodeGetData(n_temp);
@@ -298,7 +340,6 @@ void reattributionPoints3Simplex(Simplex *t1, Simplex* t2, Simplex* t3, List *l)
 
 		if(simplex_choisi != NULL)
 		{
-
 			hauteur = calculHauteur(simplex_choisi,v_temp);
 			if(hauteur > simplex_choisi->m_hauteur || simplex_choisi->m_hauteur == 0.0) //Si la hauteur du point est superieur
 			{
@@ -316,6 +357,11 @@ void reattributionPoints3Simplex(Simplex *t1, Simplex* t2, Simplex* t3, List *l)
 		simplex_choisi = NULL;
 		n_temp = nodeGetNext(n_temp);
 	}	
+
+	fprintf(stderr, "t1: %d\n", t1->m_list_candidats->Count);
+	fprintf(stderr, "t2: %d\n", t2->m_list_candidats->Count);
+	fprintf(stderr, "t3: %d\n", t3->m_list_candidats->Count);
+
 	//Pour tous les points de la liste
 	//On test l'appartenance au triangle
 	//On calcule sa hauteur
@@ -343,6 +389,14 @@ double calculHauteur(Simplex *s, Vertex *pt)
 }
 
 
+void affichageSimplex(Simplex * s)
+{
+	affichageVertex(s->m_tab_points[0]);
+	affichageVertex(s->m_tab_points[1]);
+	affichageVertex(s->m_tab_points[2]);
+}
+
+
 
 void affichageSimplex2D(Simplex * s)
 {
@@ -362,7 +416,7 @@ void affichageSimplex2D(Simplex * s)
 
 void affichageSimplex3D(Simplex * s)
 {
-	glBegin(GL_LINE_STRIP);
+	glBegin(GL_LINE);
 	
 	glColor3f(1.0, 1.0, 1.0);
 	
@@ -381,3 +435,75 @@ float getHauteur(Simplex * s)
 	return s->m_hauteur;
 }
 
+void copy(Simplex * s1, Simplex * s2)
+{
+	s1->m_tab_points[0] = s2->m_tab_points[0];
+	s1->m_tab_points[1] = s2->m_tab_points[1];
+	s1->m_tab_points[2] = s2->m_tab_points[2];
+	s1->m_tab_voisins[0] = s2->m_tab_voisins[0];
+	s1->m_tab_voisins[1] = s2->m_tab_voisins[1];
+	s1->m_tab_voisins[2] = s2->m_tab_voisins[2];
+	s1->m_list_candidats = s2->m_list_candidats;
+	s1->m_hauteur = s2->m_hauteur;
+	s1->m_afficher = s2->m_afficher;
+	s1->m_equation_plan = s2->m_equation_plan;
+}
+
+void ajouteVoisin(Simplex * s, Simplex * s_voisin)
+{
+	int i;
+	int j;
+	int nb_diff = 0;
+	if(s_voisin != NULL)
+	{
+		for(i = 0; i < 3; i++)
+		{
+			for(j = 0; j < 3; j++)
+			{
+				if(egalite(s->m_tab_points[i], s_voisin->m_tab_points[j]) == 0)
+					nb_diff++;
+			}
+			if(nb_diff == 3)
+				break;	
+			nb_diff = 0;
+		}
+		fprintf(stderr, "*** AJOUTE ***\n");
+		affichageSimplex(s);
+		affichageSimplex(s_voisin);
+		fprintf(stderr, "i: %d\n", i);
+		s->m_tab_voisins[i] = s_voisin;
+
+	}
+}
+
+
+int egaliteSimplex(Simplex * s1, Simplex * s2)
+{
+	if(egalite(s1->m_tab_points[0], s2->m_tab_points[0]) == 0)
+		return 0;
+	if(egalite(s1->m_tab_points[1], s2->m_tab_points[1]) == 0)
+		return 0;
+	if(egalite(s1->m_tab_points[2], s2->m_tab_points[2]) == 0)
+		return 0;
+	return 1;
+}
+
+
+int indiceDiff(Simplex * s1, Simplex * s2)
+{
+	int i;
+	int j;
+	int nb_diff = 0;
+	for(i = 0; i < 3; i++)
+	{
+		for(j = 0; j < 3; j++)
+		{
+			if(egalite(s1->m_tab_points[i], s2->m_tab_points[j]) == 0)
+				nb_diff++;
+		}
+		if(nb_diff == 3)
+			return i;
+		nb_diff = 0;
+	}
+	return -1;
+}

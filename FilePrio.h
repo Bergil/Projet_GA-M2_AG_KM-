@@ -20,7 +20,9 @@ typedef struct
 
 ////////////////////////////// FILE DE PRIORITE //////////////////////////////////////////////////////
 
-void initFDP(fdp * f);
+fdp * allouerFDP(int nb_element);
+
+void initFDP(fdp * f, int nb_element);
 
 int ordreHauteur(Simplex *a, Simplex *b);
 
@@ -32,17 +34,15 @@ void insertSimplex(fdp *f, Simplex *s);
 
 Simplex* getTete(fdp *f);
 
-//void remplissageListeParTab(fdp *f, Simplex * T, int nbSimplex);
-
 void creationPointsFDP(fdp *f);
 
-fdp * allouerFDP();
+void affichageHauteurFDP(fdp * f);
 
 void cleanFDP(fdp *f);
 
 void destructionFDP(fdp * f);
 
-void affichageHauteurFDP(fdp * f);
+void supprElement(fdp * f, Simplex * s);
 
 #endif
 

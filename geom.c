@@ -1,4 +1,4 @@
-
+#include "geom.h"
 /*! \fn int Angle (Vertex *A, Vertex *B, Vertex *C)
  *  \brief computes the "exterior angle" made by directed triple <\a A, \a B, \a C>.
  *  \param A first vertex in directed triple
@@ -21,11 +21,14 @@
  */
 int Angle (Vertex *A, Vertex *B, Vertex *C)
 { 
-   Real det;
+  double det;
 
   if (A == B || B == C || A == C)
    return STRAIGHT;
-  det = (C->y-B->y)*(B->x-A->x)-(B->y-A->y)*(C->x-B->x);
+  det = (C->coords[1] - B->coords[1]) *
+        (B->coords[0] - A->coords[0]) - 
+        (B->coords[1] - A->coords[1]) * 
+        (C->coords[0] - B->coords[0]);
   if (det  < 0.0)
    return RIGHT;
   if (det == 0.0)
@@ -76,15 +79,15 @@ int Angle (Vertex *A, Vertex *B, Vertex *C)
  */
 int InCircle (Vertex *A, Vertex *B, Vertex *C, Vertex *Z)
 {
-   Real AZx = A->x - Z->x, AZy = A->y - Z->y,
-        BZx = B->x - Z->x, BZy = B->y - Z->y,
-        CZx = C->x - Z->x, CZy = C->y - Z->y,
+   double AZx = A->coords[0] - Z->coords[0], AZy = A->coords[1] - Z->coords[1],
+        BZx = B->coords[0] - Z->coords[0], BZy = B->coords[1] - Z->coords[1],
+        CZx = C->coords[0] - Z->coords[0], CZy = C->coords[1] - Z->coords[1],
           
-        det = ((A->x + Z->x)*AZx + (A->y + Z->y)*AZy) * (BZx*CZy - BZy*CZx) +
-              ((B->x + Z->x)*BZx + (B->y + Z->y)*BZy) * (CZx*AZy - CZy*AZx) +
-              ((C->x + Z->x)*CZx + (C->y + Z->y)*CZy) * (AZx*BZy - AZy*BZx);
+        det = ((A->coords[0] + Z->coords[0])*AZx + (A->coords[1] + Z->coords[1])*AZy) * (BZx*CZy - BZy*CZx) +
+              ((B->coords[0] + Z->coords[0])*BZx + (B->coords[1] + Z->coords[1])*BZy) * (CZx*AZy - CZy*AZx) +
+              ((C->coords[0] + Z->coords[0])*CZx + (C->coords[1] + Z->coords[1])*CZy) * (AZx*BZy - AZy*BZx);
   
    
    /* should return (det > 0.0) ? IN : (det == 0.0) ? ON : OUT; really */
-   return (det > 0.0) ? IN : 0;
+   return (det > 0.0) ? 1 : 0;
 }
