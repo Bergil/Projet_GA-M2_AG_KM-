@@ -181,14 +181,68 @@ void affichageSimplex3D(Simplex * s);
  */
 float getHauteur(Simplex * s);
 
+/**
+ * \fn void copy(Simplex * s1, Simplex * s2)
+ *
+ * \brief S1 devient la copie du simplex s2
+ *
+ * \param s1 pointeur sur simplex que l'on souhaite modifier
+ * \param s2 pointeur sur simplex que l'on souhaite copier
+ */
 void copy(Simplex * s1, Simplex * s2);
 
+/**
+ * \fn void ajouteVoisin(Simplex * s, Simplex * s_voisin)
+ *
+ * \brief Ajoute le simplex s_voisin au tableau de voisin de s
+ * Il est ajouté à la place qui lui est destiné, à la position du point de s n'appartenant pas a s_voisin
+ */
 void ajouteVoisin(Simplex * s, Simplex * s_voisin);
 
+/**
+ * \fn int egaliteSimplex(Simplex * s1, Simplex * s2)
+ *
+ * \brief Test l'egalité de deux simplex
+ *
+ * \param s1 pointeur sur simplex
+ * \param s2 pointeur sur simplex
+ *
+ * \return 1 si les simplex sont egaux, 0 sinon
+ */
 int egaliteSimplex(Simplex * s1, Simplex * s2);
 
+/**
+ * \fn void affichageSimplex(Simplex * s)
+ *
+ * \brief Affiche les points du simplex en coordonnées
+ *
+ * \param s pointeur sur simplex
+ */
 void affichageSimplex(Simplex * s);
 
+/**
+ * \fn int indiceDiff(Simplex * s1, Simplex * s2)
+ *
+ * \brief Retourne la position dans le tableau de point du point appartenant à s1 et pas à s2
+ * s1 et s2 doivent être voisin pour que la fontion est un interet
+ *
+ * \param s1 pointeur sur simplex
+ * \param s2 pointeur sur simplex voisin de s1
+ *
+ * \return retourne la position du point ou -1 si rien à été trouvé
+ */
 int indiceDiff(Simplex * s1, Simplex * s2);
+
+/**
+ * \fn int indicePosition(Simplex * s, Vertex * v)
+ *
+ * \brief retourne la position du point dans le tableau de point du simplex
+ *
+ * \param s pointeur sur simplex
+ * \param v pointeur sur vertex
+ *
+ * \return position du point ou -1 si il n'appartient pas au simplex
+ */
+int indicePosition(Simplex * s, Vertex * v);
 
 #endif

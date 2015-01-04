@@ -44,5 +44,6 @@ void destructionFDP(fdp * f);
 
 void supprElement(fdp * f, Simplex * s);
 
+void affichageFDP(fdp * f);
 #endif
 

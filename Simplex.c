@@ -88,6 +88,7 @@ Simplex* newSimplexWithPoint(Vertex* p1, Vertex* p2, Vertex* p3)
 
 void ajoutPointsSimplex(Simplex* t, Vertex* p1, Vertex* p2, Vertex* p3)
 {
+	t->m_afficher = 1;
 	t->m_tab_points[0] = minLexico(p1,p2,p3);
 
 	if(egalite(t->m_tab_points[0], p1))
@@ -245,10 +246,10 @@ void reattributionPoints2Simplex(Simplex *t1, Simplex* t2, List *l)
 	Vertex *v_temp = NULL;
 	Simplex *simplex_choisi = NULL;
 
-	fprintf(stderr, "----- REDISTR 2-----\n");
-	fprintf(stderr, "count: %d\n", l->Count);
-	fprintf(stderr, "t1: %d\n", t1->m_list_candidats->Count);
-	fprintf(stderr, "t2: %d\n", t2->m_list_candidats->Count);
+	// fprintf(stderr, "----- REDISTR 2-----\n");
+	// fprintf(stderr, "count: %d\n", l->Count);
+	// fprintf(stderr, "t1: %d\n", t1->m_list_candidats->Count);
+	// fprintf(stderr, "t2: %d\n", t2->m_list_candidats->Count);
 	
 	for(i = 0; i < l->Count; i++)
 	{
@@ -288,8 +289,8 @@ void reattributionPoints2Simplex(Simplex *t1, Simplex* t2, List *l)
 		n_temp = nodeGetNext(n_temp);
 	}	
 
-	fprintf(stderr, "t1: %d\n", t1->m_list_candidats->Count);
-	fprintf(stderr, "t2: %d\n", t2->m_list_candidats->Count);
+	// fprintf(stderr, "t1: %d\n", t1->m_list_candidats->Count);
+	// fprintf(stderr, "t2: %d\n", t2->m_list_candidats->Count);
 
 	//Pour tous les points de la liste
 	//On test l'appartenance au triangle
@@ -309,11 +310,11 @@ void reattributionPoints3Simplex(Simplex *t1, Simplex* t2, Simplex* t3, List *l)
 	Vertex *v_temp = NULL;
 	Simplex *simplex_choisi = NULL;
 	
-	fprintf(stderr, "----- REDISTR 3-----\n");
-	fprintf(stderr, "count: %d\n", l->Count);
-	fprintf(stderr, "t1: %d\n", t1->m_list_candidats->Count);
-	fprintf(stderr, "t2: %d\n", t2->m_list_candidats->Count);
-	fprintf(stderr, "t3: %d\n", t3->m_list_candidats->Count);
+	// fprintf(stderr, "----- REDISTR 3-----\n");
+	// fprintf(stderr, "count: %d\n", l->Count);
+	// fprintf(stderr, "t1: %d\n", t1->m_list_candidats->Count);
+	// fprintf(stderr, "t2: %d\n", t2->m_list_candidats->Count);
+	// fprintf(stderr, "t3: %d\n", t3->m_list_candidats->Count);
 
 	for(i = 0; i < l->Count; i++)
 	{
@@ -358,9 +359,9 @@ void reattributionPoints3Simplex(Simplex *t1, Simplex* t2, Simplex* t3, List *l)
 		n_temp = nodeGetNext(n_temp);
 	}	
 
-	fprintf(stderr, "t1: %d\n", t1->m_list_candidats->Count);
-	fprintf(stderr, "t2: %d\n", t2->m_list_candidats->Count);
-	fprintf(stderr, "t3: %d\n", t3->m_list_candidats->Count);
+	// fprintf(stderr, "t1: %d\n", t1->m_list_candidats->Count);
+	// fprintf(stderr, "t2: %d\n", t2->m_list_candidats->Count);
+	// fprintf(stderr, "t3: %d\n", t3->m_list_candidats->Count);
 
 	//Pour tous les points de la liste
 	//On test l'appartenance au triangle
@@ -400,9 +401,18 @@ void affichageSimplex(Simplex * s)
 
 void affichageSimplex2D(Simplex * s)
 {
+	glBegin(GL_TRIANGLES);
+	glColor3f(1.0, 1.0, 1.0);
+
+	glVertex2f(s->m_tab_points[0]->coords[0], s->m_tab_points[0]->coords[1]);
+	glVertex2f(s->m_tab_points[1]->coords[0], s->m_tab_points[1]->coords[1]);
+	glVertex2f(s->m_tab_points[2]->coords[0], s->m_tab_points[2]->coords[1]);
+
+	glEnd();
+
 	glBegin(GL_LINE_STRIP);
 	
-	glColor3f(1.0, 1.0, 1.0);
+	glColor3f(0.0, 0.0, 0.0);
 	
 	//fprintf(stderr, "Je viens la \n");
 	glVertex2f(s->m_tab_points[0]->coords[0], s->m_tab_points[0]->coords[1]);
@@ -467,10 +477,10 @@ void ajouteVoisin(Simplex * s, Simplex * s_voisin)
 				break;	
 			nb_diff = 0;
 		}
-		fprintf(stderr, "*** AJOUTE ***\n");
-		affichageSimplex(s);
-		affichageSimplex(s_voisin);
-		fprintf(stderr, "i: %d\n", i);
+		// fprintf(stderr, "*** AJOUTE ***\n");
+		// affichageSimplex(s);
+		// affichageSimplex(s_voisin);
+		// fprintf(stderr, "i: %d\n", i);
 		s->m_tab_voisins[i] = s_voisin;
 
 	}
@@ -504,6 +514,17 @@ int indiceDiff(Simplex * s1, Simplex * s2)
 		if(nb_diff == 3)
 			return i;
 		nb_diff = 0;
+	}
+	return -1;
+}
+
+int indicePosition(Simplex * s, Vertex * v)
+{
+	int i;
+	for(i = 0; i < 3; i++)
+	{
+		if(egalite(s->m_tab_points[i], v) == 1)
+			return i; 
 	}
 	return -1;
 }

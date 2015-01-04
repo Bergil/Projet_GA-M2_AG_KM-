@@ -8,17 +8,17 @@ GL_LIBRARIES = -lglut -lGL -lm  -lGLU -lXmu -lXext -lXi -lX11 #Pour linus
 CC=gcc
 OS = "unknown"
 
-all: main
+all: delaunay
 
 %.o : %.c
 	$(CC) $(GL_INCLUDE) $(CFLAGS) $<
-main: main.o FilePrio.o List.o Vertex.o Node.o Simplex.o EquationPlan.o Pile.o geom.o
+delaunay: main.o FilePrio.o List.o Vertex.o Node.o Simplex.o EquationPlan.o Pile.o geom.o
 	$(CC) $(GL_LIBDIR) $^ $(GL_LIBRARIES) -o $@
 	
 #
 clean:
 	@echo "operating system = $(OS)"
-	rm -rf *.o main DOX
+	rm -rf *.o delaunay DOX
 
 ################################################################################
 # Generate doxygen documentation of file main.c using command file main.dox.

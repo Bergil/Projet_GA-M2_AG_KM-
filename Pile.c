@@ -41,7 +41,9 @@ Simplex * depiler(Pile * p)
 
 void affichagePile(Pile * p)
 {
+	fprintf(stderr, "*** Affichage pile ***\n");
 	int i;
+	fprintf(stderr, "nbElementPile: %d\n", p->m_nb_elements);
 	for(i = 0; i < p->m_nb_elements; i++)
 	{
 		affichageSimplex(p->m_tab_simplex[i]);

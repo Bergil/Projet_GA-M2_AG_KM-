@@ -101,7 +101,7 @@ void affichageVertex2D(Vertex * v)
 {
 	glBegin(GL_POINTS);
 	
-	glColor3f(1.0, 0.0, 0.0);
+	glColor3f(0.0, 1.0, 0.0);
 	
 	//fprintf(stderr, "Je viens la \n");
 	glVertex2f(v->coords[0], v->coords[1]);
