@@ -28,7 +28,7 @@ const double minX = 0,
  */
 int nbPoints = 0;
 int nbFacettes = -1;
-int dimension = -1;
+int dimension = 3;
 int pas = -1;
 float rotate[3];
 float translate[3];
@@ -699,5 +699,10 @@ int main(int argc, char **argv)
     
 
   	destructionFDP(f);
+  	for(i = 0; i<nbSimplexAjoute; i++)
+		free(&TSimplex[i]);
+	for(i = 0; i<nbPoints; i++)
+		free(&TVertex[i]);
+	
   return EXIT_SUCCESS;  
 }  
