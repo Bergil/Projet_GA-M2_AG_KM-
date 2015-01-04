@@ -312,9 +312,9 @@ void affichageSimplex3DInterieur(Simplex * s)
 {
 	
 	glBegin(GL_TRIANGLES);
-	glVertex3f(s->m_tab_points[0]->coords[0], s->m_tab_points[0]->coords[1], s->m_tab_points[0]->coords[2]);
-	glVertex3f(s->m_tab_points[1]->coords[0], s->m_tab_points[1]->coords[1], s->m_tab_points[1]->coords[2]);
-	glVertex3f(s->m_tab_points[2]->coords[0], s->m_tab_points[2]->coords[1], s->m_tab_points[2]->coords[2]);
+	glVertex3f(s->m_tab_points[0]->coords[0], s->m_tab_points[0]->coords[1], s->m_tab_points[0]->coords[2]/2);
+	glVertex3f(s->m_tab_points[1]->coords[0], s->m_tab_points[1]->coords[1], s->m_tab_points[1]->coords[2]/2);
+	glVertex3f(s->m_tab_points[2]->coords[0], s->m_tab_points[2]->coords[1], s->m_tab_points[2]->coords[2]/2);
 
 	glEnd();
 }
@@ -322,10 +322,10 @@ void affichageSimplex3DInterieur(Simplex * s)
 void affichageSimplex3DLigne(Simplex * s)
 {
 	glBegin(GL_LINE_STRIP);
-	glVertex3f(s->m_tab_points[0]->coords[0], s->m_tab_points[0]->coords[1], s->m_tab_points[0]->coords[2]);
-	glVertex3f(s->m_tab_points[1]->coords[0], s->m_tab_points[1]->coords[1], s->m_tab_points[1]->coords[2]);
-	glVertex3f(s->m_tab_points[2]->coords[0], s->m_tab_points[2]->coords[1], s->m_tab_points[2]->coords[2]);
-	glVertex3f(s->m_tab_points[0]->coords[0], s->m_tab_points[0]->coords[1], s->m_tab_points[0]->coords[2]);
+	glVertex3f(s->m_tab_points[0]->coords[0], s->m_tab_points[0]->coords[1], s->m_tab_points[0]->coords[2]/2);
+	glVertex3f(s->m_tab_points[1]->coords[0], s->m_tab_points[1]->coords[1], s->m_tab_points[1]->coords[2]/2);
+	glVertex3f(s->m_tab_points[2]->coords[0], s->m_tab_points[2]->coords[1], s->m_tab_points[2]->coords[2]/2);
+	glVertex3f(s->m_tab_points[0]->coords[0], s->m_tab_points[0]->coords[1], s->m_tab_points[0]->coords[2]/2);
 	glEnd();
 }
 

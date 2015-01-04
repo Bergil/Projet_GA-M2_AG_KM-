@@ -31,3 +31,19 @@ Vertex
 	- recreer les nouveau triangles
 	- supprimer les anciens
 	- mettre à jour la file
+
+//Option du programme
+	- -nX : X = nombre de points
+	- -fX : X = nombre de facettes
+	- -dX : X = nombre de dimensions (2 ou 3)
+	- -pX : X = dessin direct ou pas-à-pas (0 ou 1)
+	
+//Manipulation de la caméra en mode 3D
+
+	- Q et D : translation sur axe X
+	- Z et S : translation sur axe Y
+	- A et E : translation sur axe Z
+	
+	- I et K : rotation sur axe X
+	- J et L : rotation sur axe Y
+	- U et O : rotation sur axe Z

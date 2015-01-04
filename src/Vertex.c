@@ -71,7 +71,7 @@ void affichageVertex3D(Vertex * v)
 	glBegin(GL_POINTS);
 	
 	glColor3f(1.0, 0.0, 1.0);
-	glVertex3f(v->coords[0], v->coords[1], v->coords[2]); 
+	glVertex3f(v->coords[0], v->coords[1], v->coords[2]/2); 
 
 	glEnd();
 }

@@ -29,7 +29,7 @@ const double minX = 0,
 int nbPoints = 0;
 int nbFacettes = -1;
 int dimension = -1;
-
+int pas = -1;
 float rotate[3];
 float translate[3];
 
@@ -474,7 +474,7 @@ void GestionClavier2D(unsigned char key, int x, int y)
 			fprintf(stderr, "NB POINTS TRAITER: %d\n", nbPoints_traiter);
 			fprintf(stderr, "NB SIMPLEX AJOUTE: %d\n", nbSimplexAjoute);
 		}else{
-			fprintf(stderr, "trop de facettes : arrêt du programme\n"); 
+			fprintf(stderr, "trop de facettes\n"); 
 		} 
 	}
 	if (key == 'r')
@@ -518,7 +518,7 @@ void GestionClavier3D(unsigned char key, int x, int y)
 			glClear(GL_COLOR_BUFFER_BIT);
 			glutPostRedisplay();
 		}else{
-			fprintf(stderr, "trop de facettes : arrêt du programme\n");
+			fprintf(stderr, "trop de facettes\n");
 		}
 	}
 	else if(key == 'l')
@@ -590,7 +590,7 @@ int main(int argc, char **argv)
 	int c;
 
 	opterr = 0;
-	while ((c = getopt(argc, argv, "n:f:d:")) != EOF)
+	while ((c = getopt(argc, argv, "n:f:d:p:")) != EOF)
 	{
 		switch (c)
 		{
@@ -602,6 +602,9 @@ int main(int argc, char **argv)
 						break;
 			case 'd': if ((sscanf(optarg, "%d", &dimension) > 3) || dimension < 2)
 						dimension = 3;
+						break;
+			case 'p': if ((sscanf(optarg, "%d", &pas) < 0) || pas > 1)
+						pas = 0;
 						break;
 			case '?': printf("use option -nX (no space), with 0 < X.\n");
 					  break;
@@ -626,65 +629,37 @@ int main(int argc, char **argv)
 	insertSimplex(f, &TSimplex[0]);
 	insertSimplex(f, &TSimplex[1]);
 
-
-	/*Simplex *s;
-	while(f->nbSimplex > 0 && nbFacettes > nbSimplexAjoute)
-	{
-
-		s = getTete(f);
-		if(s != NULL)
+	if (pas != 1){
+		Simplex *s;
+		while(f->nbSimplex > 0 && nbFacettes > nbSimplexAjoute)
 		{
-			while(s->m_afficher == 0)
-			{
-				s = getTete(f);
-				if (s == NULL)
-					break;
-			}
+
+			s = getTete(f);
 			if(s != NULL)
 			{
-				if(s->m_list_candidats->Count > 0)
+				while(s->m_afficher == 0)
 				{
-					divisionSimplex(s);
+					s = getTete(f);
+					if (s == NULL)
+						break;
 				}
+				if(s != NULL)
+				{
+					if(s->m_list_candidats->Count > 0)
+					{
+						divisionSimplex(s);
+					}
+				}
+				else
+					fprintf(stderr, "YA PLUS RIEN !!!\n");
 			}
-			else
-				fprintf(stderr, "YA PLUS RIEN !!!\n");
 		}
+		if (nbSimplexAjoute < nbFacettes)
+			fprintf(stderr, "trop de facettes\n");
+		
+		fprintf(stderr, "NB POINTS TRAITER: %d\n", nbPoints_traiter);
+		fprintf(stderr, "NB SIPLEX AJOUTE: %d\n", nbSimplexAjoute);
 	}
-	if (nbSimplexAjoute < nbFacettes)
-		fprintf(stderr, "trop de facettes : arrêt du programme\n");
-	
-	fprintf(stderr, "NB POINTS TRAITER: %d\n", nbPoints_traiter);
-	fprintf(stderr, "NB SIPLEX AJOUTE: %d\n", nbSimplexAjoute);*/
-	
-	
-	//-------------Affichage 2D
-	/*glutInit(&argc, argv);  
-	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);  
-	glutInitWindowPosition(5,5);  
-	glutInitWindowSize(600, 600);  
-	glutCreateWindow("My first OpenGL window...");  // Là, c'est une incantation (sic)* de fenêtre !
-	winInit();
-
-	//fprintf(stderr, "f->nbSimplex: %d\n", f->nbSimplex);
-
-	//Affichage pas a pas
-	glutKeyboardFunc(GestionClavier2D); 	
-
-    glutDisplayFunc(displaySimplex2D);
-    glutMainLoop(); */
-    //-------------------------
-	
-	//-------------Affichage 3D
-	// init GLUT and create Window
-	
-	/*glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-	glutInitWindowSize(600, 600); //Window size
-	glutCreateWindow("Un nom moins couillon"); //Create a window
-
-	glEnable(GL_DEPTH_TEST); //Make sure 3D drawing works when one object is in front of another
-	glDepthMask(GL_TRUE);*/
 	
   	int i;
   	for(i = 0; i < 3; i++)
@@ -721,8 +696,7 @@ int main(int argc, char **argv)
 	}
 	// enter GLUT event processing cycle
 	glutMainLoop();
-    //-------------------------
-	glutMainLoop();
+    
 
   	destructionFDP(f);
   return EXIT_SUCCESS;  

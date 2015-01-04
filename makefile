@@ -7,18 +7,21 @@ GL_LIBRARIES = -lglut -lGL -lm  -lGLU -lXmu -lXext -lXi -lX11 #Pour linus
 #changer les librairies par celle du prof sous linux#
 CC=gcc
 OS = "unknown"
+SRC= $(wildcard src/*.c)
+DIR_OBJ=obj/
+OBJ= $(SRC:.c=.o)
 
 all: delaunay
 
-%.o : %.c
+$(DIR_OBJ)%.o : src/%.c
 	$(CC) $(GL_INCLUDE) $(CFLAGS) $<
-delaunay: main.o FilePrio.o List.o Vertex.o Node.o Simplex.o EquationPlan.o Pile.o geom.o
+delaunay: $(OBJ)
 	$(CC) $(GL_LIBDIR) $^ $(GL_LIBRARIES) -o $@
 	
 #
 clean:
 	@echo "operating system = $(OS)"
-	rm -rf *.o delaunay DOX
+	rm -rf obj/*.o src/*.o delaunay DOX
 
 ################################################################################
 # Generate doxygen documentation of file main.c using command file main.dox.
