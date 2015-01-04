@@ -6,20 +6,35 @@
 #include <GL/glut.h> 
 #include "Node.h"
 
-/** @defgroup List List
+/**
+ * \file List.h
+ * \brief Header de la struct List
+ * \version 0.1
+ * \date 7 novembre 2014
+ *
+ * Déclaration de la structure List et ces méthodes associées
+ *
+ */
+
+/** @defgroup s_list List
  *
  * Liste doublement chaînée de void*
  * Préfixe des fonctions : lst
  * @{
 **/
 
-/** @brief List
-**/
-typedef struct
+/**
+  * \struct s_list
+  *
+  * \brief Objet List
+  * 
+  * List est une liste chainée
+  */
+typedef struct s_list
 {
-	Node* First;
-	Node* Last;
-	unsigned int Count;
+	Node* First; /*!< Premier élément de la liste */
+	Node* Last; /*!< Deuxième élément de la liste */
+	unsigned int Count; /*!< nombre d'élément de la liste */
 } List;
 
 /** @brief Réserve une nouvelle liste en mémoire et l'initialise

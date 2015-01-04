@@ -100,10 +100,12 @@ void selectPoints(int nbPoints)
 }
 
 
-//////////////////////////////////////// Affichages ///////////////////////////////////////
- /*warning Particularite: "callback function", ie pas d'argument transmis... Tout en global, yeurk!
- */
 
+/**
+ * \fn void displaySimplex2D(void)
+ *
+ * \brief Affichage 2D des simplex
+ */
 void displaySimplex2D(void)
 {
 	int i;
@@ -126,7 +128,11 @@ void displaySimplex2D(void)
 
 
 
-//Draws the 3D scene
+/**
+ * \fn void displaySimplex2D(void)
+ *
+ * \brief Affichage 2D des simplex
+ */
 void displaySimplex3D()
 {
     //Clear screen
@@ -196,41 +202,22 @@ List* listerVertex()
 	return l;
 }
 
-int testAngle(Simplex * s)
-{
-	int k;
-	int j;
-	int i;
-	int somme = 0;
-	Simplex * s_voisin;
-	for(k = 0; k < 3; k++)//k est l'indice du point
-	{	
-		s_voisin = s->m_tab_voisins[k];
-		if(s_voisin != NULL)
-		{
-			for(i = 0; i < 3; i++)
-			{
-				if(s_voisin->m_tab_voisins[i] != NULL)
-					if(egaliteSimplex(s, s_voisin->m_tab_voisins[i]) == 1)
-						break; //i est l'indice du point du voisin
-			}
 
-			//Test de l'angle
-			for(j = 0; j < 3; j++)
-			{
-				if(j != k)
-				{
-					somme += Angle(s->m_tab_points[k], s->m_tab_points[j], s_voisin->m_tab_points[i]);
-				}
-			}
-			if( somme == 0 )
-				return 1;
-			somme = 0;
-		}
-	}
-	return 0;
-}
-
+/**
+ * \fn void inversionDiagSimplex(Simplex * s, Simplex * s_voisin, int indice_diag, int indice_diag_voisin)
+ *
+ * \brief inversion de la diagonale entre deux simplex
+ * - creation des deux nouveaux simplexs
+ * - mise a jour des voisins
+ * - redistribution des points candidats
+ * - rajoute dans la file de prio
+ * - rajoute dans la pile
+ *
+ * \param s pointeur sur le premier simplex
+ * \param s_voisin pointeur sur le deuxieme simplex voisin du premier
+ * \param indice_diag indice du point de la nouvelle diag dans le simplex
+ * \param indice_diag_voisin indice du point de la nouvelle diag dans le simplex voisin
+ */
 void inversionDiagSimplex(Simplex * s, Simplex * s_voisin, int indice_diag, int indice_diag_voisin)
 {
 	Simplex * s1;
@@ -260,21 +247,29 @@ void inversionDiagSimplex(Simplex * s, Simplex * s_voisin, int indice_diag, int 
 	if(s->m_tab_voisins[dernier_point_s2] != NULL)
 		ajouteVoisin(s->m_tab_voisins[dernier_point_s2], s1);
 
-	int position = indicePosition(s_voisin, s->m_tab_points[dernier_point_s2]);
-	ajouteVoisin(s1, s_voisin->m_tab_voisins[position]);
-	if(s_voisin->m_tab_voisins[position] != NULL)
-		ajouteVoisin(s_voisin->m_tab_voisins[position], s1);
 
-	ajouteVoisin(s2, s1);
-	
+	int position = indicePosition(s_voisin, s->m_tab_points[dernier_point_s2]);
+	if(position != -1)
+	{
+		ajouteVoisin(s1, s_voisin->m_tab_voisins[position]);
+		if(s_voisin->m_tab_voisins[position] != NULL)
+			ajouteVoisin(s_voisin->m_tab_voisins[position], s1);
+	}
+
+	//fprintf(stderr, "Avant ajout voisin\n");
+
+	ajouteVoisin(s2, s1);	
 	ajouteVoisin(s2, s->m_tab_voisins[dernier_point_s1]);
 	if(s->m_tab_voisins[dernier_point_s1] != NULL)
 		ajouteVoisin(s->m_tab_voisins[dernier_point_s1], s2);
 	
 	position = indicePosition(s_voisin, s->m_tab_points[dernier_point_s1]);
-	ajouteVoisin(s2, s_voisin->m_tab_voisins[position]);
-	if(s_voisin->m_tab_voisins[position] != NULL)
-		ajouteVoisin(s_voisin->m_tab_voisins[position], s2);
+	if(position != -1)
+	{
+		ajouteVoisin(s2, s_voisin->m_tab_voisins[position]);
+		if(s_voisin->m_tab_voisins[position] != NULL)
+			ajouteVoisin(s_voisin->m_tab_voisins[position], s2);
+	}
 
 	s1->m_list_candidats->Count = 0;
 	s2->m_list_candidats->Count = 0;
@@ -283,7 +278,7 @@ void inversionDiagSimplex(Simplex * s, Simplex * s_voisin, int indice_diag, int 
 	//Reatribution des points
 	reattributionPoints2Simplex(s1, s2, s->m_list_candidats);
 	reattributionPoints2Simplex(s1, s2, s_voisin->m_list_candidats);
-	
+
 	s->m_afficher = 0;
 	s_voisin->m_afficher = 0;
 
@@ -300,11 +295,27 @@ void inversionDiagSimplex(Simplex * s, Simplex * s_voisin, int indice_diag, int 
 	{
 		if(egaliteSimplex(&TSimplex[i], s) == 1)
 			TSimplex[i] = *s1;
-		else if(egaliteSimplex(&TSimplex[i], s_voisin) == 1)
+		if(egaliteSimplex(&TSimplex[i], s_voisin) == 1)
 			TSimplex[i] = *s2;
 	}
+
+	//fprintf(stderr, "Fin ajout voisin\n");
+	//fprintf(stderr, "Fin\n");
 }
 
+/**
+ * \fn void inversionDiagonale(Simplex * s, Simplex * s1, Simplex * s2)
+ *
+ * \brief - ajoute les trois nouveaux simplex créés
+ * - on depile
+ * - onn choisit les simplex et le voisin avec qui on veut flip la diagonale
+ * - test de l'angle
+ * - test de la diagonale
+ *
+ * \param s pointeur sur le premier simplex
+ * \param s1 pointeur sur le second simplex
+ * \param s2 pointeur sur le troisieme simplex
+ */
 void inversionDiagonale(Simplex * s, Simplex * s1, Simplex * s2)
 {
 	int i;
@@ -418,11 +429,16 @@ void divisionSimplex(Simplex * s)
 		insertSimplex(f, s2);
 	if(s3->m_list_candidats->Count > 0)
 		insertSimplex(f, s3);
-
 	inversionDiagonale(s3, s1, s2);
 }
 
-
+/**
+ * \fn void GestionClavier2D(unsigned char key, int x, int y)
+ *
+ * \brief gere la gestion des touches lors de l'execution en 2D
+ *
+ * \param parametres obligatoires
+ */
 void GestionClavier2D(unsigned char key, int x, int y)
 { 		 
 	Simplex *s;
@@ -430,7 +446,7 @@ void GestionClavier2D(unsigned char key, int x, int y)
 	{
 		if(f->nbSimplex > 0 && nbSimplexAjoute <= nbFacettes)
 		{
-			fprintf(stderr, "******************** AJOUT D'UN POINT ******************** \n");
+			//fprintf(stderr, "******************** AJOUT D'UN POINT ******************** \n");
 			affichageFDP(f);
 			s = getTete(f);
 			if(s != NULL)
@@ -461,6 +477,13 @@ void GestionClavier2D(unsigned char key, int x, int y)
 	}
 }
 
+/**
+ * \fn void GestionClavier3D(unsigned char key, int x, int y)
+ *
+ * \brief gere la gestion des touches lors de l'execution en 3D
+ *
+ * \param parametres obligatoires
+ */
 void GestionClavier3D(unsigned char key, int x, int y)
 { 		 
 
@@ -584,7 +607,7 @@ int main(int argc, char **argv)
 	Simplex *s;
 	while(f->nbSimplex > 0 && nbSimplexAjoute <= nbFacettes)
 	{
-		fprintf(stderr, "******************** AJOUT D'UN POINT ******************** \n");
+
 		s = getTete(f);
 		if(s != NULL)
 		{
@@ -597,7 +620,10 @@ int main(int argc, char **argv)
 			if(s != NULL)
 			{
 				if(s->m_list_candidats->Count > 0)
+				{
+					boucle++;
 					divisionSimplex(s);
+				}
 			}
 			else
 				fprintf(stderr, "YA PLUS RIEN !!!\n");

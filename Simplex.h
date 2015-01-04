@@ -6,6 +6,13 @@
 #include "List.h"
 #include "EquationPlan.h"
 
+#define IN 1
+#define OUT 0
+#define CONF -1
+
+#define EGAL_HAUTEUR 0
+#define SUP_HAUTEUR 1
+#define INF_HAUTEUR -1
 
 /**
  * \file Simplex.h
@@ -18,12 +25,18 @@
  *
  */
 
+/** @defgroup s_simplex Simplex
+ *
+ * Un triangle dans l'espace
+ * @{
+**/
 
 /**
- * \struct s_Simplex
+ * \struct s_simplex
+ *
  * \brief Objet Simplex
  *
- * Simplex est un objet comprenant 3 points pour représenter un Simplex 
+ * Simplex est un objet comprenant 3 points pour représenter un Triangle 
  */
 typedef struct s_simplex
 {
@@ -31,8 +44,7 @@ typedef struct s_simplex
 	struct s_simplex* m_tab_voisins[3]; /*!< tableau de voisins */
 	List* m_list_candidats; /*!< pointeur sur un point */
 	double m_hauteur; /*!< hauteur maximum des ses points par rapport à ce simplex */
-	int m_afficher;
-	
+	int m_afficher; /*!< booléen de prise en compte */
 	EquationPlan m_equation_plan; /*!< equation du plan formé par les pints du simplex */
 } Simplex;
 
@@ -246,5 +258,17 @@ int indiceDiff(Simplex * s1, Simplex * s2);
  * \return position du point ou -1 si il n'appartient pas au simplex
  */
 int indicePosition(Simplex * s, Vertex * v);
+
+/**
+ * \fn int ordreHauteur(Simplex *a, Simplex *b)
+ *
+ * \brief test la hauteur d'un simplex par rapport à un autre simplex
+ *
+ * \param a pointeur sur simplex que l'on test
+ * \param b pointeur sur simplex
+ *
+ * \return EGAL_HAUTEUR 0, SUP_HAUTEUR 1, INF_HAUTEUR -1
+ */
+int ordreHauteur(Simplex *a, Simplex *b);
 
 #endif

@@ -1,9 +1,5 @@
 #include "Simplex.h"
 
-#define IN 1
-#define OUT 0
-#define CONF -1
-
 Simplex* newSimplex()
 {
 	Simplex* t = (Simplex*) malloc(sizeof(Simplex));
@@ -415,4 +411,14 @@ int indicePosition(Simplex * s, Vertex * v)
 			return i; 
 	}
 	return -1;
+}
+
+int ordreHauteur(Simplex *a, Simplex *b)
+{
+	if(a->m_hauteur < b->m_hauteur)
+		return INF_HAUTEUR;
+	else if(a->m_hauteur > b->m_hauteur)
+		return SUP_HAUTEUR;
+	else
+		return EGAL_HAUTEUR;
 }

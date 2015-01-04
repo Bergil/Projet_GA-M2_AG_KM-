@@ -33,26 +33,6 @@ int orientationPolaire(const Vertex *A, const Vertex *B, const Vertex *C)
 	else return ALIGNE;
 }
 
-int estAuDessusX(Vertex* a, Vertex* b)
-{
-	if(a->coords[0] > b->coords[0])
-		return 1;
-	return 0;
-}
-int estAuDessusY(Vertex* a, Vertex* b)
-{
-	if(a->coords[1] > b->coords[1])
-		return 1;
-	return 0;
-}
-
-int estAuDessusZ(Vertex* a, Vertex* b)
-{
-	if(a->coords[2] > b->coords[2])
-		return 1;
-	return 0;
-}
-
 int egalite(Vertex* a, Vertex* b){
 	if(a->coords[0] != b->coords[0])
 		return 0;
@@ -62,6 +42,7 @@ int egalite(Vertex* a, Vertex* b){
 		return 0;
 	return 1;
 }
+
 
 double calculLongueur(Vertex* a, Vertex* b)
 {
@@ -118,5 +99,3 @@ Vertex * minLexico(Vertex *a, Vertex *b, Vertex *c)
 	}
 	return res;
 }
-
-

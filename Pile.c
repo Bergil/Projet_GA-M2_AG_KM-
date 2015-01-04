@@ -1,11 +1,11 @@
 
 #include "Pile.h"
 
-Pile * creationPile(int nb_elements)
+Pile * creationPile(int taille)
 {
 	Pile * p;
 	ALLOUER(p,1);
-	ALLOUER(p->m_tab_simplex, nb_elements);
+	ALLOUER(p->m_tab_simplex, taille);
 	p->m_nb_elements = 0;
 	return p;
 }

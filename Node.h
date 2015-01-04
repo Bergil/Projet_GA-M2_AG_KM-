@@ -3,8 +3,17 @@
 
 #include <stdlib.h>
 
+/**
+ * \file Node.h
+ * \brief Header de la struct Node
+ * \version 0.1
+ * \date 7 novembre 2014
+ *
+ * Déclaration de la structure Node et ces méthodes associées
+ *
+ */
 
-/** @defgroup Node Node
+/** @defgroup s_Node Node
  *
  * Elément d'une List (Liste doublement chaînée)
  * Sert également l'itérateur sur ces listes.
@@ -14,11 +23,18 @@
 
 typedef void* Elem;
 
+/**
+  * \struct s_Node
+  *
+  * \brief Objet Node
+  * 
+  * Node est un noeud doublement chainé
+  */
 typedef struct s_Node
 {
-	Elem Data;
-	struct s_Node* Prev;
-	struct s_Node* Next;
+	Elem Data; /*!< Valeur du noeud */
+	struct s_Node* Prev; /*!< pointeur sur l'élement précédent */
+	struct s_Node* Next; /*!< pointeur sur l'élément suivant */
 } Node;
 
 /** @brief Alloue un nouveau Node en mémoire et l'initialise
