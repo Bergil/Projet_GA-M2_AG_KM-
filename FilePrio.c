@@ -4,8 +4,8 @@
 
 ////////////////////////////// FILE DE PRIORITE //////////////////////////////////////////////////////
 
-void initFDP(fdp * f, int nb_element){
-	ALLOUER(f->tableau_Simplex, nb_element);
+void initFDP(fdp * f, int taille){
+	ALLOUER(f->tableau_Simplex, taille);
 	f->nbSimplex = 0;
 }
 
@@ -16,15 +16,7 @@ void initFDP(fdp * f, int nb_element){
 	}
 }*/
 
-int ordreHauteur(Simplex *a, Simplex *b)
-{
-	if(a->m_hauteur < b->m_hauteur)
-		return INF_HAUTEUR;
-	else if(a->m_hauteur > b->m_hauteur)
-		return SUP_HAUTEUR;
-	else
-		return EGAL_HAUTEUR;
-}
+
 
 void upHeap(fdp *f, int position){
 	Simplex* tmp;
@@ -69,6 +61,37 @@ void downHeap(fdp *f)
 	}
 }
 
+void downHeapPos(fdp *f, int position)
+{
+	Simplex* temp;
+	int posfilsgauche = position*2;
+	int posfilsdroit = position*2+1;
+	int marqueurPosition;
+	if(posfilsgauche <= f->nbSimplex && posfilsdroit <= f->nbSimplex+1 && position > 0)
+	{
+		while(posfilsgauche <= f->nbSimplex && posfilsdroit <= f->nbSimplex+1 &&
+			 (ordreHauteur(f->tableau_Simplex[position], f->tableau_Simplex[posfilsgauche]) == SUP_HAUTEUR ||
+			  ordreHauteur(f->tableau_Simplex[position], f->tableau_Simplex[posfilsdroit]) == SUP_HAUTEUR))
+		{	
+			if(ordreHauteur(f->tableau_Simplex[posfilsgauche], f->tableau_Simplex[posfilsdroit]) == SUP_HAUTEUR)
+			{
+				marqueurPosition = posfilsdroit;
+			}else{
+				marqueurPosition = posfilsgauche;
+			}
+			temp = f->tableau_Simplex[marqueurPosition];
+			f->tableau_Simplex[marqueurPosition] = f->tableau_Simplex[position];
+			f->tableau_Simplex[position] = temp;
+			
+			position = marqueurPosition;
+			posfilsgauche = position*2;
+			posfilsdroit = position*2+1;
+			if(posfilsgauche > f->nbSimplex || posfilsdroit > f->nbSimplex)
+				break;
+		}
+	}
+}
+
 void insertSimplex(fdp *f, Simplex *s)
 {
 	if(f->nbSimplex < TAILLE_MAX)
@@ -97,11 +120,11 @@ Simplex* getTete(fdp *f)
 	return s;
 }
 
-fdp * allouerFDP(int nb_element)
+fdp * allouerFDP(int taille)
 {
   fdp* f;
   ALLOUER(f, 1);
-  initFDP(f, nb_element);
+  initFDP(f, taille);
   return f;
 }
 
@@ -173,4 +196,17 @@ void affichageFDP(fdp * f)
 		if(f->tableau_Simplex[i] != NULL)
 			affichageSimplex(f->tableau_Simplex[i]);
 	}
+}
+
+
+
+int positionDansFDP(fdp * f, Simplex *s)
+{
+	int i;
+	for(i = 1; i<f->nbSimplex; i++)
+	{
+		if(egaliteSimplex(s, f->tableau_Simplex[i]) == 1)
+			return i;
+	}
+	return -1;
 }
