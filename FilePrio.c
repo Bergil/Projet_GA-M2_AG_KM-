@@ -91,9 +91,9 @@ Simplex* getTete(fdp *f)
 	s = f->tableau_Simplex[1];
 	f->tableau_Simplex[1] = f->tableau_Simplex[f->nbSimplex];
 	f->nbSimplex = f->nbSimplex-1;
-	//fprintf(stderr, "avant downHeap\n");
 	downHeap(f);
-	//fprintf(stderr, "apres downheap\n");
+	if(s == NULL)
+		fprintf(stderr, "s NULL\n");
 	return s;
 }
 
@@ -159,4 +159,18 @@ void supprElement(fdp * f, Simplex * s)
 		}
 	}
 	f->nbSimplex--;
+}
+
+
+
+
+void affichageFDP(fdp * f)
+{
+	int i;
+	for(i = 0; i<f->nbSimplex +10; i++)
+	{
+		fprintf(stderr, "i: %d\n", i);
+		if(f->tableau_Simplex[i] != NULL)
+			affichageSimplex(f->tableau_Simplex[i]);
+	}
 }
