@@ -273,7 +273,7 @@ double calculHauteur(Simplex *s, Vertex *pt)
 	double z;
 	z = (double)(- (s->m_equation_plan.m_a * pt->coords[0]
 		 		+ s->m_equation_plan.m_b * pt->coords[1]
-		 		+ s->m_equation_plan.m_d)) / s->m_equation_plan.m_c;y-d)/c
+		 		+ s->m_equation_plan.m_d)) / s->m_equation_plan.m_c;
 
 	hauteur = pt->coords[2] - z; //Soustraction de la coordonnée
 
@@ -301,15 +301,6 @@ double randomColor()
 
 void affichageSimplex2D(Simplex * s)
 {
-	glBegin(GL_TRIANGLES);
-	glColor3f(0.0, 1.0, 0.0);
-
-	glVertex2f(s->m_tab_points[0]->coords[0], s->m_tab_points[0]->coords[1]);
-	glVertex2f(s->m_tab_points[1]->coords[0], s->m_tab_points[1]->coords[1]);
-	glVertex2f(s->m_tab_points[2]->coords[0], s->m_tab_points[2]->coords[1]);
-
-	glEnd();
-
 	glBegin(GL_LINE_STRIP);
 	glColor3f(1.0, 1.0, 1.0);
 

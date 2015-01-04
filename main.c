@@ -28,6 +28,7 @@ const double minX = 0,
  */
 int nbPoints = 0;
 int nbFacettes = -1;
+int dimension = -1;
 
 float rotate[3];
 float translate[3];
@@ -427,7 +428,7 @@ void GestionClavier2D(unsigned char key, int x, int y)
 	Simplex *s;
 	if (key == 'p')
 	{
-		if(f->nbSimplex > 0)
+		if(f->nbSimplex > 0 && nbSimplexAjoute <= nbFacettes)
 		{
 			fprintf(stderr, "******************** AJOUT D'UN POINT ******************** \n");
 			affichageFDP(f);
@@ -450,7 +451,9 @@ void GestionClavier2D(unsigned char key, int x, int y)
 			}
 			glClear(GL_COLOR_BUFFER_BIT);
 			glutPostRedisplay();
-		}  
+		}else{
+			fprintf(stderr, "trop de facettes : arrêt du programme\n"); 
+		} 
 	}
 	if (key == 'r')
 	{
@@ -464,12 +467,14 @@ void GestionClavier3D(unsigned char key, int x, int y)
 	fprintf(stderr, "Gestion du clavier\n");
 	if (key == 'p')
 	{
-		if(f->nbSimplex > 0)
+		if(f->nbSimplex > 0 && nbSimplexAjoute <= nbFacettes)
 		{
 			divisionSimplex(getTete(f));
 			glClear(GL_COLOR_BUFFER_BIT);
 			glutPostRedisplay();
-		}  
+		}else{
+			fprintf(stderr, "trop de facettes : arrêt du programme\n");
+		}
 	}
 	else if(key == 'l')
 	{
@@ -540,7 +545,7 @@ int main(int argc, char **argv)
 	int c;
 
 	opterr = 0;
-	while ((c = getopt(argc, argv, "n:")) != EOF)
+	while ((c = getopt(argc, argv, "n:f:d:")) != EOF)
 	{
 		switch (c)
 		{
@@ -548,7 +553,10 @@ int main(int argc, char **argv)
 						nbPoints = 50;
 					  	break;
 			case 'f': if ((sscanf(optarg, "%d", &nbFacettes) != 1) || nbFacettes <= 0)
-						nbFacettes = 10;
+						nbFacettes = 1000;
+						break;
+			case 'd': if ((sscanf(optarg, "%d", &dimension) > 3) || dimension < 2)
+						dimension = 3;
 						break;
 			case '?': printf("use option -nX (no space), with 0 < X.\n");
 					  break;
@@ -564,7 +572,6 @@ int main(int argc, char **argv)
 
 	assert(TVertex != NULL);
 	selectPoints(nbPoints);
-	printf("Veuillez choisir une option : Rien encore\n"); 
 	
 	initialisePremiersSimplex();
 	List *l = listerVertex();
@@ -575,7 +582,7 @@ int main(int argc, char **argv)
 	insertSimplex(f, &TSimplex[1]);
 
 	Simplex *s;
-	while(f->nbSimplex > 0)
+	while(f->nbSimplex > 0 && nbSimplexAjoute <= nbFacettes)
 	{
 		fprintf(stderr, "******************** AJOUT D'UN POINT ******************** \n");
 		s = getTete(f);
@@ -596,52 +603,39 @@ int main(int argc, char **argv)
 				fprintf(stderr, "YA PLUS RIEN !!!\n");
 		}
 	}
+	if (nbSimplexAjoute < nbFacettes)
+		fprintf(stderr, "trop de facettes : arrêt du programme\n");
 	
-	//-------------Affichage 2D
-	/*glutInit(&argc, argv);  
-	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);  
+	glutInit(&argc, argv);  
+	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA | GLUT_DEPTH);  
 	glutInitWindowPosition(5,5);  
 	glutInitWindowSize(600, 600);  
-	glutCreateWindow("My first OpenGL window...");  // Là, c'est une incantation (sic)* de fenêtre !
-	winInit();
-
-	//fprintf(stderr, "f->nbSimplex: %d\n", f->nbSimplex);
-
-	//Affichage pas a pas
-	glutKeyboardFunc(GestionClavier2D); 	
-
-    glutDisplayFunc(displaySimplex2D);
-    glutMainLoop(); */
-    //-------------------------
-	
-	//-------------Affichage 3D
-	// init GLUT and create Window
-	
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-	glutInitWindowSize(600, 600); //Window size
-	glutCreateWindow("Un nom moins couillon"); //Create a window
-
-	glEnable(GL_DEPTH_TEST); //Make sure 3D drawing works when one object is in front of another
-	glDepthMask(GL_TRUE);
-	
-  	int i;
-  	for(i = 0; i < 3; i++){
-		rotate[i] = 0;
-		translate[i] = 0;
+	glutCreateWindow("My first OpenGL window..."); 
+	switch(dimension) {
+		case 2 : //-------------Affichage 2D
+			winInit();
+			//Affichage pas a pas
+			glutKeyboardFunc(GestionClavier2D); 	
+			glutDisplayFunc(displaySimplex2D);
+			break;
+			
+		case 3 :
+			glEnable(GL_DEPTH_TEST); //Make sure 3D drawing works when one object is in front of another
+			glDepthMask(GL_TRUE);
+			int i;
+			for(i = 0; i < 3; i++){
+				rotate[i] = 0;
+				translate[i] = 0;
+			}
+			winInit3D();
+			// register callbacks
+			glutKeyboardFunc(GestionClavier3D);
+			glutDisplayFunc(displaySimplex3D);
+			break;
 	}
-
-	winInit3D();
-	// register callbacks
-	glutKeyboardFunc(GestionClavier3D);
-	glutDisplayFunc(displaySimplex3D);
-
 	// enter GLUT event processing cycle
 	glutMainLoop();
-    //-------------------------
 
-  	
-  
   	destructionFDP(f);
   return EXIT_SUCCESS;  
 }  

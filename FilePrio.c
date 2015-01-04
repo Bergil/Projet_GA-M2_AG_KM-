@@ -9,13 +9,6 @@ void initFDP(fdp * f, int nb_element){
 	f->nbSimplex = 0;
 }
 
-/*void remplissageListeParTab(fdp *f, Simplex * T, int nbSimplex){
-	int i;
-	for(i =0; i < nbSimplex; i++){
-		insertSimplex(f, &T[i]);
-	}
-}*/
-
 int ordreHauteur(Simplex *a, Simplex *b)
 {
 	if(a->m_hauteur < b->m_hauteur)
@@ -31,14 +24,12 @@ void upHeap(fdp *f, int position){
 	int pospere = position /2;
 	while ((position>1) && (ordreHauteur(f->tableau_Simplex[position], f->tableau_Simplex[pospere]) == INF_HAUTEUR))
 	{
-		//fprintf(stderr, "Dans le while de l'insertion\n");
 		tmp = f->tableau_Simplex[pospere];
 		f->tableau_Simplex[pospere] = f->tableau_Simplex[position];
 		f->tableau_Simplex[position] = tmp;
 		position = pospere;
 		pospere = position/2;		
 	}
-	//fprintf(stderr, "position: %d\n", position);
 }
 
 void downHeap(fdp *f)
@@ -77,12 +68,9 @@ void insertSimplex(fdp *f, Simplex *s)
 		f->nbSimplex = f->nbSimplex + 1;
 		//Ajoute le simplex au tableau	
 		f->tableau_Simplex[f->nbSimplex] = s;
-		//fprintf(stderr, "*** insert *** hauteur: %f\n", getHauteur(s));
 		//On le remonte
 		upHeap(f, f->nbSimplex);
-		//f->nbSimplex = f->nbSimplex + 1;
 	}	
-
 }
 
 Simplex* getTete(fdp *f)
@@ -117,20 +105,15 @@ void destructionFDP(fdp * f)
   free(f);
 }
 
-
 void affichageHauteurFDP(fdp * f)
 {
 	int i;
-	//fprintf(stderr, "Nb simplex: %d\n", f->nbSimplex);
 	for(i = 0; i < f->nbSimplex; i++)
 	{
 		fprintf(stderr, "pt: %d  ", i);
 		fprintf(stderr, "*** Aff *** hauteur: %f\n", getHauteur(f->tableau_Simplex[i]));
-		//fprintf(stderr, "  %f - %f \n", f->tableau_Simplex[i]->coords[0], f->tableau_Simplex[i]->coords[1]);
 	}
 }
-
-
 
 void supprElement(fdp * f, Simplex * s)
 {
@@ -160,9 +143,6 @@ void supprElement(fdp * f, Simplex * s)
 	}
 	f->nbSimplex--;
 }
-
-
-
 
 void affichageFDP(fdp * f)
 {
