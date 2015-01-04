@@ -41,6 +41,8 @@ fdp * f = NULL;
 Pile * pile;
 int nbSimplexAjoute = 0;
 
+int nbPoints_traiter = 4;
+
 
 /**
  * \fn double myRandom (double a, double b)
@@ -399,6 +401,7 @@ void inversionDiagonale(Simplex * s, Simplex * s1, Simplex * s2)
  */
 void divisionSimplex(Simplex * s)
 {
+	nbPoints_traiter++;
 	Vertex * v = nodeGetData(s->m_list_candidats->First);
 
 	//creer les 3 nouveaux
@@ -462,10 +465,10 @@ void GestionClavier2D(unsigned char key, int x, int y)
 	Simplex *s;
 	if (key == 'p')
 	{
-		if(f->nbSimplex > 0)
+		if(f->nbSimplex > 0 && nbFacettes > nbSimplexAjoute)
 		{
 			//fprintf(stderr, "******************** AJOUT D'UN POINT ******************** \n");
-			affichageFDP(f);
+			//affichageFDP(f);
 			s = getTete(f);
 			if(s != NULL)
 			{
@@ -485,6 +488,9 @@ void GestionClavier2D(unsigned char key, int x, int y)
 			}
 			glClear(GL_COLOR_BUFFER_BIT);
 			glutPostRedisplay();
+
+			fprintf(stderr, "NB POINTS TRAITER: %d\n", nbPoints_traiter);
+			fprintf(stderr, "NB SIMPLEX AJOUTE: %d\n", nbSimplexAjoute);
 		}  
 	}
 	if (key == 'r')
@@ -582,7 +588,7 @@ int main(int argc, char **argv)
 	int c;
 
 	opterr = 0;
-	while ((c = getopt(argc, argv, "n:")) != EOF)
+	while ((c = getopt(argc, argv, "n:f:")) != EOF)
 	{
 		switch (c)
 		{
@@ -602,7 +608,7 @@ int main(int argc, char **argv)
 	assert(nbPoints > 0);
 	TVertex = (Vertex *) malloc(sizeof(Vertex)*nbPoints+5);
 	TSimplex = (Simplex *) malloc(sizeof(Simplex)*nbPoints*4); 
-	pile = creationPile(2*nbPoints+6);
+	pile = creationPile(2*nbPoints-6);
 
 	assert(TVertex != NULL);
 	selectPoints(nbPoints);
@@ -612,11 +618,11 @@ int main(int argc, char **argv)
 	List *l = listerVertex();
 	reattributionPoints2Simplex(&TSimplex[0], &TSimplex[1], l);
 
-	f = allouerFDP(2*nbPoints+6);
+	f = allouerFDP(2*nbPoints-6);
 	insertSimplex(f, &TSimplex[0]);
 	insertSimplex(f, &TSimplex[1]);
 
-	Simplex *s;
+	/*Simplex *s;
 	int boucle = 0;
 	while(f->nbSimplex > 0)
 	{
@@ -643,8 +649,12 @@ int main(int argc, char **argv)
 		}
 	}
 	
+	fprintf(stderr, "NB POINTS TRAITER: %d\n", nbPoints_traiter);
+	fprintf(stderr, "NB SIPLEX AJOUTE: %d\n", nbSimplexAjoute);
+	*/
+	
 	//-------------Affichage 2D
-	/*glutInit(&argc, argv);  
+	glutInit(&argc, argv);  
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);  
 	glutInitWindowPosition(5,5);  
 	glutInitWindowSize(600, 600);  
@@ -657,13 +667,13 @@ int main(int argc, char **argv)
 	glutKeyboardFunc(GestionClavier2D); 	
 
     glutDisplayFunc(displaySimplex2D);
-    glutMainLoop(); */
+    glutMainLoop(); 
     //-------------------------
 	
 	//-------------Affichage 3D
 	// init GLUT and create Window
 	
-	glutInit(&argc, argv);
+	/*glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 	glutInitWindowSize(600, 600); //Window size
 	glutCreateWindow("Un nom moins couillon"); //Create a window
@@ -683,7 +693,7 @@ int main(int argc, char **argv)
 	glutDisplayFunc(displaySimplex3D);
 
 	// enter GLUT event processing cycle
-	glutMainLoop();
+	glutMainLoop();*/
     //-------------------------
 
   	

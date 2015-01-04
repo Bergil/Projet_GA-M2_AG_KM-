@@ -177,13 +177,21 @@ double calculHauteur(Simplex *s, Vertex *pt);
 void affichageSimplex2D(Simplex * s);
 
 /**
- * \fn void affichageSimplex3D(Simplex * s)
+ * \fn void affichageSimplex3DInterieur(Simplex * s)
  *
  * \brief Affichage du simplex dans un espace en trois dimmensions
  *
  * \param s pointeur sur un simplex
  */
 void affichageSimplex3DInterieur(Simplex * s);
+
+/**
+ * \fn void affichageSimplex3DLigne(Simplex * s)
+ *
+ * \brief Affichage du simplex dans un espace en trois dimmensions
+ *
+ * \param s pointeur sur un simplex
+ */
 void affichageSimplex3DLigne(Simplex * s);
 
 /**
