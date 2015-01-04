@@ -29,6 +29,9 @@ const double minX = 0,
 int nbPoints = 0;
 int nbFacettes = -1;
 
+float rotate[3];
+float translate[3];
+
 GLint GlobalePrimitiveDessin;
 
 /*! Tableau gobal des sommets */
@@ -84,7 +87,6 @@ void selectPoints(int nbPoints)
   for(i = 0; i < 4; i++){
 	 TVertex[i].coords[0] = (i%2)*maxX;
      TVertex[i].coords[1] = (i/2)*maxY;
-     //fprintf(stderr, "i: %f - %f\n", TVertex[i].coords[0], TVertex[i].coords[1]);
      TVertex[i].coords[2] = myRandom(minZ, maxZ);
   }
   int n = nbPoints;
@@ -103,17 +105,13 @@ void selectPoints(int nbPoints)
 
 void displaySimplex2D(void)
 {
-	//fprintf(stderr, "Dessin 2D\n");
 	int i;
 
 	glColor3f(0.0, 0.0, 0.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	//fprintf(stderr, "nbSimplexAjoute: %d\n", nbSimplexAjoute);
 	for(i = 0; i < nbSimplexAjoute; i++)
 	{
-		//affichageSimplex(&TSimplex[i]);
-		//fprintf(stderr, "\n");
 		affichageSimplex2D(&TSimplex[i]);
 	}
 
@@ -126,19 +124,6 @@ void displaySimplex2D(void)
 }
 
 
-void init(int argc, char** argv)
-{
-	//Initialize GLUT
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-	glutInitWindowSize(600, 600); //Window size
-	glutCreateWindow("Introduction to OpenGL"); //Create a window
-
-	//glMaterial();
-	glEnable(GL_DEPTH_TEST); //Make sure 3D drawing works when one object is in front of another
-  	//glEnable(GL_LIGHTING); 	// Active l'éclairage
-  	//glEnable(GL_LIGHT0); 	// Allume la lumière n°1
-}
 
 //Draws the 3D scene
 void displaySimplex3D()
@@ -147,17 +132,35 @@ void displaySimplex3D()
     glColor3f(0.0, 0.0, 0.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glTranslatef(translate[0], translate[1], translate[2]);
+	glRotatef(rotate[0], 1, 0,0);
+	glRotatef(rotate[1], 0, 1,0);
+	glRotatef(rotate[2], 0, 0,1);
 	int i;
+	glColor3f(0.0,1.0,0.0);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glEnable(GL_POLYGON_OFFSET_FILL);
+	glPolygonOffset(1.0, 1.0);
 	for(i = 0; i < nbSimplexAjoute; i++)
 	{
-		affichageSimplex3D(&TSimplex[i]);
+		affichageSimplex3DInterieur(&TSimplex[i]);
+	}
+	
+	glDisable(GL_POLYGON_OFFSET_FILL);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glColor3f(1.0,1.0,1.0);
+	for(i = 0; i < nbSimplexAjoute; i++)
+	{
+		affichageSimplex3DLigne(&TSimplex[i]);
 	}
 	for(i = 0; i<nbPoints; i++)
 	{
 		affichageVertex3D(&TVertex[i]);
 	}
+	glPopMatrix();
 	glutSwapBuffers(); //Send scene to the screen to be shown
-	//glutPostRedisplay();
+	glutPostRedisplay();
 }
 
 
@@ -168,7 +171,6 @@ void displaySimplex3D()
  */
 void initialisePremiersSimplex()
 {
-	//fprintf(stderr, "----- Initialisation Premier Simplex -----\n");
 	ajoutPointsSimplex(&TSimplex[0], &TVertex[0], &TVertex[1], &TVertex[2]);
 	ajoutPointsSimplex(&TSimplex[1], &TVertex[1], &TVertex[2], &TVertex[3]);
 	ajouteVoisin(&TSimplex[0], &TSimplex[1]);
@@ -230,13 +232,6 @@ int testAngle(Simplex * s)
 
 void inversionDiagSimplex(Simplex * s, Simplex * s_voisin, int indice_diag, int indice_diag_voisin)
 {
-	// fprintf(stderr, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
-	// affichageSimplex(s);
-	// affichageSimplex(s_voisin);
-	// fprintf(stderr, "indice_diag: %d\n", indice_diag);
-	// fprintf(stderr, "indice_diag_voisin: %d\n", indice_diag_voisin);
-	// fprintf(stderr, "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n");
-
 	Simplex * s1;
 	Simplex * s2;
 	int dernier_point_s1;
@@ -256,7 +251,6 @@ void inversionDiagSimplex(Simplex * s, Simplex * s_voisin, int indice_diag, int 
 		dernier_point_s1 = 0;
 		dernier_point_s2 = 1;
 	}
-	//Creation des nouveaux simplex
 	s1 = newSimplexWithPoint(s->m_tab_points[indice_diag], s_voisin->m_tab_points[indice_diag_voisin], s->m_tab_points[dernier_point_s1]);
 	s2 = newSimplexWithPoint(s->m_tab_points[indice_diag], s_voisin->m_tab_points[indice_diag_voisin], s->m_tab_points[dernier_point_s2]);		
 
@@ -284,8 +278,6 @@ void inversionDiagSimplex(Simplex * s, Simplex * s_voisin, int indice_diag, int 
 	s1->m_list_candidats->Count = 0;
 	s2->m_list_candidats->Count = 0;
 
-	//supprElement(f, s);
-	//supprElement(f, s_voisin);
 
 	//Reatribution des points
 	reattributionPoints2Simplex(s1, s2, s->m_list_candidats);
@@ -329,27 +321,17 @@ void inversionDiagonale(Simplex * s, Simplex * s1, Simplex * s2)
 	while(pile->m_nb_elements != 0)
 	{
 		simplex = depiler(pile);
-		//fprintf(stderr, "\nSimplex\n");
-		//affichageSimplex(simplex);
-
 		for(k = 0; k < 3; k++)
 		{				
 			s_voisin = simplex->m_tab_voisins[k];
 
-			//k est l'indice du voisin dans le simplex
 			if(s_voisin != NULL)
 			{
-				//fprintf(stderr, "voisin: \n");
-				//affichageSimplex(s_voisin);
 				if(estDans(pile, s_voisin) == 1)
 				{
-					// fprintf(stderr, "Il est dans la pile\n");	
 					continue; //i est l'indice du point du voisin
 				}
-
 				i = indiceDiff(s_voisin, simplex);
-				// fprintf(stderr, "*** DEBUT ANGLE i: %d k: %d***\n", i, k);	
-
 				//Test de l'angle
 				for(j = 0; j < 3; j++)
 				{
@@ -358,13 +340,10 @@ void inversionDiagonale(Simplex * s, Simplex * s1, Simplex * s2)
 						somme += Angle(simplex->m_tab_points[k], simplex->m_tab_points[j], s_voisin->m_tab_points[i]);
 					}
 				}
-				//fprintf(stderr, "somme: %d\n", somme);
-				
 				if( somme == 0 )
 				{		
 					//On fait le test du cercle
 					res = InCircle(simplex->m_tab_points[0],simplex->m_tab_points[1],simplex->m_tab_points[2],s_voisin->m_tab_points[i]);
-
 					if(res == 1)
 					{
 						inversionDiagSimplex(simplex, s_voisin, k, i);
@@ -376,7 +355,6 @@ void inversionDiagonale(Simplex * s, Simplex * s1, Simplex * s2)
 			}
 		}
 	}
-	fprintf(stderr, "J'ai tout fini\n");
 }
 
 
@@ -391,7 +369,6 @@ void inversionDiagonale(Simplex * s, Simplex * s1, Simplex * s2)
  */
 void divisionSimplex(Simplex * s)
 {
-	//fprintf(stderr, "Je suis au debut de division \n");
 	Vertex * v = nodeGetData(s->m_list_candidats->First);
 
 	//creer les 3 nouveaux
@@ -399,19 +376,9 @@ void divisionSimplex(Simplex * s)
 	Simplex * s2 = newSimplexWithPoint(s->m_tab_points[1], s->m_tab_points[2], v);
 	Simplex * s3 = newSimplexWithPoint(s->m_tab_points[2], s->m_tab_points[0], v);
 
-	//fprintf(stderr, "J'ai ajoute\n");
 	lstPopFront(s->m_list_candidats);
 	reattributionPoints3Simplex(s1, s2, s3, s->m_list_candidats);
 
-	/*affichageSimplex(s);
-	int i;
-	for(i = 0; i<3; i++)
-	{
-		if(s->m_tab_voisins[i] != NULL)
-			affichageSimplex(s->m_tab_voisins[i]);
-	}*/
-
-	//fprintf(stderr, "***** Les 3 nouveaux simplex *****\n");
 	ajouteVoisin(s1,s2);
 	ajouteVoisin(s1,s3);
 	ajouteVoisin(s1,s->m_tab_voisins[2]);
@@ -424,25 +391,11 @@ void divisionSimplex(Simplex * s)
 	if(s->m_tab_voisins[0] != NULL)
 		ajouteVoisin(s->m_tab_voisins[0], s2);
 
-	/*fprintf(stderr, "s\n");
-	affichageSimplex(s);
-	fprintf(stderr, "s2\n");
-	affichageSimplex(s2);
-	int i;
-	for(i = 0; i<3; i++)
-	{
-		if(s2->m_tab_voisins[i] != NULL)
-			affichageSimplex(s2->m_tab_voisins[i]);
-	}*/
-
-
 	ajouteVoisin(s3,s2);
 	ajouteVoisin(s3,s1);
 	ajouteVoisin(s3,s->m_tab_voisins[1]);
 	if(s->m_tab_voisins[1] != NULL)
 		ajouteVoisin(s->m_tab_voisins[1], s3);
-	//fprintf(stderr, "***** FIN Les 3 nouveaux simplex *****\n");
-
 
 	//ajouter au tab
 	TSimplex[nbSimplexAjoute] = *s1;
@@ -454,12 +407,8 @@ void divisionSimplex(Simplex * s)
 	for(i = 0; i<nbSimplexAjoute; i++)
 		if(egaliteSimplex(s, &TSimplex[i]) == 1)
 			break;
-	//copy(s, s3);
 	s->m_afficher = 0;
 	TSimplex[i] = *s3;
-	//free(s3);
-
-	//fprintf(stderr, "Je plante sur l'insertion\n");
 
 	//ajouter a la fdp si le simplex a des points candidats
 	if(s1->m_list_candidats->Count > 0)
@@ -468,7 +417,6 @@ void divisionSimplex(Simplex * s)
 		insertSimplex(f, s2);
 	if(s3->m_list_candidats->Count > 0)
 		insertSimplex(f, s3);
-	//fprintf(stderr, "Fin de la division\n" );
 
 	inversionDiagonale(s3, s1, s2);
 }
@@ -476,7 +424,6 @@ void divisionSimplex(Simplex * s)
 
 void GestionClavier2D(unsigned char key, int x, int y)
 { 		 
-	fprintf(stderr, "Gestion du clavier\n");
 	Simplex *s;
 	if (key == 'p')
 	{
@@ -495,7 +442,6 @@ void GestionClavier2D(unsigned char key, int x, int y)
 				}
 				if(s != NULL)
 				{
-					//affichageSimplex(s);
 					if(s->m_list_candidats->Count > 0)
 						divisionSimplex(s);
 				}
@@ -509,7 +455,6 @@ void GestionClavier2D(unsigned char key, int x, int y)
 	if (key == 'r')
 	{
 		glClear(GL_COLOR_BUFFER_BIT);
-		//glutPostRedisplay();
 	}
 }
 
@@ -521,62 +466,60 @@ void GestionClavier3D(unsigned char key, int x, int y)
 	{
 		if(f->nbSimplex > 0)
 		{
-			//fprintf(stderr, "***** AJOUT D'UN POINT ***** \n");
 			divisionSimplex(getTete(f));
-			
 			glClear(GL_COLOR_BUFFER_BIT);
 			glutPostRedisplay();
 		}  
 	}
 	else if(key == 'l')
 	{
-		glRotatef(10, 1.0f, 0.0f, 0.0f);
+		rotate[1] -=1.0;
 	}
 	else if (key == 'i')
 	{
-		glRotatef(10, 0.0f, 1.0f, 0.0f);
+		rotate[0] -=1.0;
 	}
 	else if (key == 'o')
 	{
-		glRotatef(10, 0.0f, 0.0f, 1.0f);
+		rotate[2] +=1.0;
 	}
 	else if(key == 'j')
 	{
-		glRotatef(10, -1.0f, 0.0f, 0.0f);
+		rotate[1] +=1.0;
 	}
 	else if (key == 'k')
 	{
-		glRotatef(10, 0.0f, -1.0f, 0.0f);
+		rotate[0] +=1.0;
 	}
 	else if (key == 'u')
 	{
-		glRotatef(10, 0.0f, 0.0f, -1.0f);
+		rotate[2] -=1.0;
 	}
 
 	else if (key == 'd')
 	{
-		glTranslatef(0.1f, 0.0f, 0.0f);
+		translate[0] += 0.01;
 	}
 	else if (key == 'z')
 	{
-		glTranslatef(0.0f, 0.1f, 0.0f);
+		translate[1] += 0.01;
 	}
 	else if (key == 'e')
 	{
-		glTranslatef(0.0f, 0.0f, 0.1f);
+		translate[2] += 0.01;
 	}
 
 	else if (key == 'q')
 	{
-		glTranslatef(-0.1f, 0.0f, 0.0f);
+		translate[0] -= 0.01;
 	}
 	else if (key == 's')
 	{
-		glTranslatef(0.0f, -0.1f, 0.0f);
+		translate[1] -= 0.01;
 	}
 	else if (key == 'a')
 	{
-		glTranslatef(0.0f, 0.0f, -0.1f);
+		translate[2] -= 0.01;
 	}
 	glutPostRedisplay() ;
 }
@@ -614,32 +557,9 @@ int main(int argc, char **argv)
 		}
 	}
 
-	//############### TEST ###################
-	/*Vertex pt1;
-	pt1.coords[0] = 0;
-	pt1.coords[1] = 0;
-	pt1.coords[2] = 0;
-	Vertex pt2;
-	pt2.coords[0] = 2;
-	pt2.coords[1] = 0;
-	pt2.coords[2] = 2;
-	Vertex pt3;
-	pt3.coords[0] = 0;
-	pt3.coords[1] = 2;
-	pt3.coords[2] = 2;
-	Simplex* s = newSimplexWithPoint( &pt1, &pt2, &pt3 );
-	
-	Vertex pt4;
-	pt4.coords[0] = 1;
-	pt4.coords[1] = 1;
-	pt4.coords[2] = 3;
-	fprintf(stderr, "Calcul hauteur: %f\n", calculHauteur(s, &pt4));*/
-
-	//int option = 0;
 	assert(nbPoints > 0);
-	//fprintf(stderr,"nbPoints = %d\n", nbPoints);
 	TVertex = (Vertex *) malloc(sizeof(Vertex)*nbPoints+5);
-	TSimplex = (Simplex *) malloc(sizeof(Simplex)*nbPoints*4); //x3 normalement
+	TSimplex = (Simplex *) malloc(sizeof(Simplex)*nbPoints*4); 
 	pile = creationPile(2*nbPoints+6);
 
 	assert(TVertex != NULL);
@@ -648,21 +568,16 @@ int main(int argc, char **argv)
 	
 	initialisePremiersSimplex();
 	List *l = listerVertex();
-	//fprintf(stderr, "liste vertex: %d\n", lstCount(l));
 	reattributionPoints2Simplex(&TSimplex[0], &TSimplex[1], l);
-	//fprintf(stderr, "S1: %d   S2: %d\n", lstCount(TSimplex[0].m_list_candidats), lstCount(TSimplex[1].m_list_candidats));
 
 	f = allouerFDP(2*nbPoints+6);
 	insertSimplex(f, &TSimplex[0]);
 	insertSimplex(f, &TSimplex[1]);
 
-	//Normal
 	Simplex *s;
 	while(f->nbSimplex > 0)
 	{
-		//affichageFDP(f);
 		fprintf(stderr, "******************** AJOUT D'UN POINT ******************** \n");
-		//fprintf(stderr, "taille de la file: %d\n", f->nbSimplex);
 		s = getTete(f);
 		if(s != NULL)
 		{
@@ -674,7 +589,6 @@ int main(int argc, char **argv)
 			}
 			if(s != NULL)
 			{
-				//affichageSimplex(s);
 				if(s->m_list_candidats->Count > 0)
 					divisionSimplex(s);
 			}
@@ -682,8 +596,6 @@ int main(int argc, char **argv)
 				fprintf(stderr, "YA PLUS RIEN !!!\n");
 		}
 	}
-
-	//clock_t temps;
 	
 	//-------------Affichage 2D
 	/*glutInit(&argc, argv);  
@@ -704,11 +616,21 @@ int main(int argc, char **argv)
 	
 	//-------------Affichage 3D
 	// init GLUT and create Window
+	
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
-	glutInitWindowPosition(100,100);
-	glutInitWindowSize(600,600);
-	glutCreateWindow("Lighthouse3D - GLUT Tutorial");
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
+	glutInitWindowSize(600, 600); //Window size
+	glutCreateWindow("Un nom moins couillon"); //Create a window
+
+	glEnable(GL_DEPTH_TEST); //Make sure 3D drawing works when one object is in front of another
+	glDepthMask(GL_TRUE);
+	
+  	int i;
+  	for(i = 0; i < 3; i++){
+		rotate[i] = 0;
+		translate[i] = 0;
+	}
+
 	winInit3D();
 	// register callbacks
 	glutKeyboardFunc(GestionClavier3D);
@@ -723,5 +645,3 @@ int main(int argc, char **argv)
   	destructionFDP(f);
   return EXIT_SUCCESS;  
 }  
-
-// *invocation

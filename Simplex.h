@@ -32,6 +32,7 @@ typedef struct s_simplex
 	List* m_list_candidats; /*!< pointeur sur un point */
 	double m_hauteur; /*!< hauteur maximum des ses points par rapport à ce simplex */
 	int m_afficher;
+	
 	EquationPlan m_equation_plan; /*!< equation du plan formé par les pints du simplex */
 } Simplex;
 
@@ -170,7 +171,8 @@ void affichageSimplex2D(Simplex * s);
  *
  * \param s pointeur sur un simplex
  */
-void affichageSimplex3D(Simplex * s);
+void affichageSimplex3DInterieur(Simplex * s);
+void affichageSimplex3DLigne(Simplex * s);
 
 /**
  * \fn void getHauteur(Simplex * s)
@@ -245,3 +247,4 @@ int indiceDiff(Simplex * s1, Simplex * s2);
  */
 int indicePosition(Simplex * s, Vertex * v);
 
+#endif

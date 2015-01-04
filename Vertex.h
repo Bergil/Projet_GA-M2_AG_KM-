@@ -22,8 +22,6 @@ Vertex * newVertexWithCoords(double x, double y, double z);
 double determinant(const Vertex *A, const Vertex *B, const Vertex *C);
 //Retourne l'orientation entre 3 points (pour le 1er quadrant)
 int orientationPolaire(const Vertex *A, const Vertex *B, const Vertex *C);
-//Teste si le point est compris dans un triangle
-//int estDansTriangle(Vertex *a, Vertex *b, Vertex *c, Vertex *pt);
 
 int estAuDessusX(Vertex* a, Vertex *b);
 
