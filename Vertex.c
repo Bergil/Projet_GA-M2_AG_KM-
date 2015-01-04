@@ -43,6 +43,39 @@ int egalite(Vertex* a, Vertex* b){
 	return 1;
 }
 
+
+double calculLongueur(Vertex* a, Vertex* b)
+{
+	return sqrt((b->coords[0] - a->coords[0])*(b->coords[0] - a->coords[0]) +
+	(b->coords[1] - a->coords[1])*(b->coords[1] - a->coords[1]) +
+	(b->coords[2] - a->coords[2])*(b->coords[2] - a->coords[2]));
+}
+
+void affichageVertex(Vertex * v)
+{
+	fprintf(stderr, "Point : %f %f %f\n", v->coords[0], v->coords[1], v->coords[2]);
+}
+
+void affichageVertex2D(Vertex * v)
+{
+	glBegin(GL_POINTS);
+	
+	glColor3f(0.0, 1.0, 0.0);
+	glVertex2f(v->coords[0], v->coords[1]);
+
+	glEnd();
+}
+
+void affichageVertex3D(Vertex * v)
+{
+	glBegin(GL_POINTS);
+	
+	glColor3f(1.0, 0.0, 1.0);
+	glVertex3f(v->coords[0], v->coords[1], v->coords[2]); 
+
+	glEnd();
+}
+
 Vertex * minLexico(Vertex *a, Vertex *b, Vertex *c)
 {
 	int i;
@@ -65,22 +98,4 @@ Vertex * minLexico(Vertex *a, Vertex *b, Vertex *c)
 		}
 	}
 	return res;
-}
-
-void affichageVertex(Vertex * v)
-{
-	fprintf(stderr, "Point : %f %f %f\n", v->coords[0], v->coords[1], v->coords[2]);
-}
-
-void affichageVertex2D(Vertex * v)
-{
-	glBegin(GL_POINTS);
-	
-	glColor3f(0.0, 1.0, 0.0);
-	
-	//fprintf(stderr, "Je viens la \n");
-	glVertex2f(v->coords[0], v->coords[1]);
-	//fprintf(stderr, "Je sors la \n");
-
-	glEnd();
 }

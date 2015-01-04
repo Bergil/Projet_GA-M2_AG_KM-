@@ -76,6 +76,7 @@ Vertex * newVertexWithCoords(double x, double y, double z);
  */
 double determinant(const Vertex *A, const Vertex *B, const Vertex *C);
 
+
 /**
  * \fn int orientationPolaire(const Vertex *A, const Vertex *B, const Vertex *C)
  *
@@ -121,6 +122,7 @@ Vertex * minLexico(Vertex *a, Vertex *b, Vertex *c);
  */
 void affichageVertex(Vertex * v);
 
+
 /**
  * \fn void affichageVertex2D(Vertex * v)
  *
@@ -129,3 +131,5 @@ void affichageVertex(Vertex * v);
  * \param v pointeur sur vertex à afficher
  */
 void affichageVertex2D(Vertex * v);
+
+void affichageVertex3D(Vertex * v);

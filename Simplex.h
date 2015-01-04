@@ -183,7 +183,8 @@ void affichageSimplex2D(Simplex * s);
  *
  * \param s pointeur sur un simplex
  */
-void affichageSimplex3D(Simplex * s);
+void affichageSimplex3DInterieur(Simplex * s);
+void affichageSimplex3DLigne(Simplex * s);
 
 /**
  * \fn void getHauteur(Simplex * s)
