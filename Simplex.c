@@ -297,15 +297,6 @@ double randomColor()
 
 void affichageSimplex2D(Simplex * s)
 {
-	glBegin(GL_TRIANGLES);
-	glColor3f(0.0, 1.0, 0.0);
-
-	glVertex2f(s->m_tab_points[0]->coords[0], s->m_tab_points[0]->coords[1]);
-	glVertex2f(s->m_tab_points[1]->coords[0], s->m_tab_points[1]->coords[1]);
-	glVertex2f(s->m_tab_points[2]->coords[0], s->m_tab_points[2]->coords[1]);
-
-	glEnd();
-
 	glBegin(GL_LINE_STRIP);
 	glColor3f(1.0, 1.0, 1.0);
 

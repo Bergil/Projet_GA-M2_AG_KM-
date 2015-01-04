@@ -28,6 +28,7 @@ const double minX = 0,
  */
 int nbPoints = 0;
 int nbFacettes = -1;
+int dimension = -1;
 
 float rotate[3];
 float translate[3];
@@ -248,10 +249,8 @@ void inversionDiagSimplex(Simplex * s, Simplex * s_voisin, int indice_diag, int 
 	if(s->m_tab_voisins[dernier_point_s2] != NULL)
 		ajouteVoisin(s->m_tab_voisins[dernier_point_s2], s1);
 
-	//fprintf(stderr, "Avant ajout voisin\n");
 
 	int position = indicePosition(s_voisin, s->m_tab_points[dernier_point_s2]);
-	//fprintf(stderr, "pos: %d\n", position);
 	if(position != -1)
 	{
 		ajouteVoisin(s1, s_voisin->m_tab_voisins[position]);
@@ -281,23 +280,6 @@ void inversionDiagSimplex(Simplex * s, Simplex * s_voisin, int indice_diag, int 
 	//Reatribution des points
 	reattributionPoints2Simplex(s1, s2, s->m_list_candidats);
 	reattributionPoints2Simplex(s1, s2, s_voisin->m_list_candidats);
-	
-	//*****************
-	/*int position_fdp_s = positionDansFDP(f, s);
-	int position_fdp_s_voisin = positionDansFDP(f, s_voisin);
-	
-	f->tableau_Simplex[position_fdp_s] = s1;
-	f->tableau_Simplex[position_fdp_s_voisin] = s2;		
-
-	upHeap(f, position_fdp_s);
-	downHeapPos(f, position_fdp_s);
-	upHeap(f, position_fdp_s_voisin);
-	downHeapPos(f, position_fdp_s_voisin);
-
-	empiler(pile, s1);
-	empiler(pile, s2);*/
-
-	//*****************
 
 	s->m_afficher = 0;
 	s_voisin->m_afficher = 0;
@@ -491,7 +473,9 @@ void GestionClavier2D(unsigned char key, int x, int y)
 
 			fprintf(stderr, "NB POINTS TRAITER: %d\n", nbPoints_traiter);
 			fprintf(stderr, "NB SIMPLEX AJOUTE: %d\n", nbSimplexAjoute);
-		}  
+		}else{
+			fprintf(stderr, "trop de facettes : arrêt du programme\n"); 
+		} 
 	}
 	if (key == 'r')
 	{
@@ -508,16 +492,34 @@ void GestionClavier2D(unsigned char key, int x, int y)
  */
 void GestionClavier3D(unsigned char key, int x, int y)
 { 		 
-
-	fprintf(stderr, "Gestion du clavier\n");
+	Simplex * s;
 	if (key == 'p')
 	{
-		if(f->nbSimplex > 0)
+		if(f->nbSimplex > 0 && nbSimplexAjoute <= nbFacettes)
 		{
-			divisionSimplex(getTete(f));
+			s = getTete(f);
+			if(s != NULL)
+			{
+				while(s->m_afficher == 0)
+				{
+					s = getTete(f);
+					if (s == NULL)
+						break;
+				}
+				if(s != NULL)
+				{
+					if(s->m_list_candidats->Count > 0)
+						divisionSimplex(s);
+				}
+				else
+					fprintf(stderr, "YA PLUS RIEN !!!\n");
+			}
+			//divisionSimplex(getTete(f));
 			glClear(GL_COLOR_BUFFER_BIT);
 			glutPostRedisplay();
-		}  
+		}else{
+			fprintf(stderr, "trop de facettes : arrêt du programme\n");
+		}
 	}
 	else if(key == 'l')
 	{
@@ -588,7 +590,7 @@ int main(int argc, char **argv)
 	int c;
 
 	opterr = 0;
-	while ((c = getopt(argc, argv, "n:f:")) != EOF)
+	while ((c = getopt(argc, argv, "n:f:d:")) != EOF)
 	{
 		switch (c)
 		{
@@ -596,7 +598,10 @@ int main(int argc, char **argv)
 						nbPoints = 50;
 					  	break;
 			case 'f': if ((sscanf(optarg, "%d", &nbFacettes) != 1) || nbFacettes <= 0)
-						nbFacettes = 10;
+						nbFacettes = 1000;
+						break;
+			case 'd': if ((sscanf(optarg, "%d", &dimension) > 3) || dimension < 2)
+						dimension = 3;
 						break;
 			case '?': printf("use option -nX (no space), with 0 < X.\n");
 					  break;
@@ -612,7 +617,6 @@ int main(int argc, char **argv)
 
 	assert(TVertex != NULL);
 	selectPoints(nbPoints);
-	printf("Veuillez choisir une option : Rien encore\n"); 
 	
 	initialisePremiersSimplex();
 	List *l = listerVertex();
@@ -622,9 +626,9 @@ int main(int argc, char **argv)
 	insertSimplex(f, &TSimplex[0]);
 	insertSimplex(f, &TSimplex[1]);
 
+
 	/*Simplex *s;
-	int boucle = 0;
-	while(f->nbSimplex > 0)
+	while(f->nbSimplex > 0 && nbFacettes > nbSimplexAjoute)
 	{
 
 		s = getTete(f);
@@ -640,7 +644,6 @@ int main(int argc, char **argv)
 			{
 				if(s->m_list_candidats->Count > 0)
 				{
-					boucle++;
 					divisionSimplex(s);
 				}
 			}
@@ -648,13 +651,15 @@ int main(int argc, char **argv)
 				fprintf(stderr, "YA PLUS RIEN !!!\n");
 		}
 	}
+	if (nbSimplexAjoute < nbFacettes)
+		fprintf(stderr, "trop de facettes : arrêt du programme\n");
 	
 	fprintf(stderr, "NB POINTS TRAITER: %d\n", nbPoints_traiter);
-	fprintf(stderr, "NB SIPLEX AJOUTE: %d\n", nbSimplexAjoute);
-	*/
+	fprintf(stderr, "NB SIPLEX AJOUTE: %d\n", nbSimplexAjoute);*/
+	
 	
 	//-------------Affichage 2D
-	glutInit(&argc, argv);  
+	/*glutInit(&argc, argv);  
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);  
 	glutInitWindowPosition(5,5);  
 	glutInitWindowSize(600, 600);  
@@ -667,7 +672,7 @@ int main(int argc, char **argv)
 	glutKeyboardFunc(GestionClavier2D); 	
 
     glutDisplayFunc(displaySimplex2D);
-    glutMainLoop(); 
+    glutMainLoop(); */
     //-------------------------
 	
 	//-------------Affichage 3D
@@ -679,25 +684,46 @@ int main(int argc, char **argv)
 	glutCreateWindow("Un nom moins couillon"); //Create a window
 
 	glEnable(GL_DEPTH_TEST); //Make sure 3D drawing works when one object is in front of another
-	glDepthMask(GL_TRUE);
+	glDepthMask(GL_TRUE);*/
 	
   	int i;
-  	for(i = 0; i < 3; i++){
+  	for(i = 0; i < 3; i++)
+  	{
 		rotate[i] = 0;
 		translate[i] = 0;
 	}
-
-	winInit3D();
-	// register callbacks
-	glutKeyboardFunc(GestionClavier3D);
-	glutDisplayFunc(displaySimplex3D);
-
+	glutInit(&argc, argv);  
+	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA | GLUT_DEPTH);  
+	glutInitWindowPosition(5,5);  
+	glutInitWindowSize(600, 600);  
+	glutCreateWindow("My first OpenGL window..."); 
+	switch(dimension) {
+		case 2 : //-------------Affichage 2D
+			winInit();
+			//Affichage pas a pas
+			glutKeyboardFunc(GestionClavier2D); 	
+			glutDisplayFunc(displaySimplex2D);
+			break;
+			
+		case 3 :
+			glEnable(GL_DEPTH_TEST); //Make sure 3D drawing works when one object is in front of another
+			glDepthMask(GL_TRUE);
+			int i;
+			for(i = 0; i < 3; i++){
+				rotate[i] = 0;
+				translate[i] = 0;
+			}
+			winInit3D();
+			// register callbacks
+			glutKeyboardFunc(GestionClavier3D);
+			glutDisplayFunc(displaySimplex3D);
+			break;
+	}
 	// enter GLUT event processing cycle
-	glutMainLoop();*/
+	glutMainLoop();
     //-------------------------
+	glutMainLoop();
 
-  	
-  
   	destructionFDP(f);
   return EXIT_SUCCESS;  
 }  
