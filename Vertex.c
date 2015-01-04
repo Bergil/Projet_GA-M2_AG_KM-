@@ -110,6 +110,19 @@ void affichageVertex2D(Vertex * v)
 	glEnd();
 }
 
+void affichageVertex3D(Vertex * v)
+{
+	glBegin(GL_POINTS);
+	
+	glColor3f(1.0, 0.0, 1.0);
+	
+	//fprintf(stderr, "Je viens la \n");
+	glVertex3f(v->coords[0], v->coords[1], v->coords[2]);
+	//fprintf(stderr, "Je sors la \n");
+
+	glEnd();
+}
+
 Vertex * minLexico(Vertex *a, Vertex *b, Vertex *c)
 {
 	int i;

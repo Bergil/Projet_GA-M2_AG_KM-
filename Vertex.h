@@ -39,4 +39,6 @@ void affichageVertex(Vertex * v);
 
 void affichageVertex2D(Vertex * v);
 
+void affichageVertex3D(Vertex * v);
+
 Vertex * minLexico(Vertex *a, Vertex *b, Vertex *c);

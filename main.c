@@ -64,6 +64,10 @@ void winInit()
   gluOrtho2D(minX, maxX, minY, maxY);
 }
 
+void winInit3D()
+{
+  glOrtho(minX, maxX, minY, maxY, -500, 500);
+}
 
 /**
  *	\fn void selectPoints(int nbPoints)
@@ -139,14 +143,20 @@ void init(int argc, char** argv)
 void displaySimplex3D()
 {
     //Clear screen
+    glColor3f(0.0, 0.0, 0.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+	glMatrixMode(GL_MODELVIEW);
 	int i;
 	for(i = 0; i < nbSimplexAjoute; i++)
 	{
 		affichageSimplex3D(&TSimplex[i]);
 	}
+	for(i = 0; i<nbPoints; i++)
+	{
+		affichageVertex3D(&TVertex[i]);
+	}
 	glutSwapBuffers(); //Send scene to the screen to be shown
+	//glutPostRedisplay();
 }
 
 
@@ -473,7 +483,7 @@ void divisionSimplex(Simplex * s)
 void GestionClavier2D(unsigned char key, int x, int y)
 { 		 
 	fprintf(stderr, "Gestion du clavier\n");
-	if (key == 's')
+	if (key == 'p')
 	{
 		fprintf(stderr, "f->nbSimplex: %d \n", f->nbSimplex);
 		if(f->nbSimplex > 0)
@@ -495,51 +505,66 @@ void GestionClavier2D(unsigned char key, int x, int y)
 void GestionClavier3D(unsigned char key, int x, int y)
 { 		 
 	fprintf(stderr, "Gestion du clavier\n");
-	if (key == 's')
+	if (key == 'p')
 	{
 		if(f->nbSimplex > 0)
 		{
 			fprintf(stderr, "***** AJOUT D'UN POINT ***** \n");
 			divisionSimplex(getTete(f));
+			
+			glClear(GL_COLOR_BUFFER_BIT);
+			glutPostRedisplay();
 		}  
 	}
-	else if(key == 'm')
+	else if(key == 'l')
 	{
 		glRotatef(10, 1.0f, 0.0f, 0.0f);
 	}
-	else if (key == 'l')
+	else if (key == 'i')
 	{
 		glRotatef(10, 0.0f, 1.0f, 0.0f);
 	}
-	else if (key == 'k')
+	else if (key == 'o')
 	{
 		glRotatef(10, 0.0f, 0.0f, 1.0f);
 	}
-
-	else if (key == 'p')
+	else if(key == 'j')
 	{
-		glTranslatef(1.0f, 0.0f, 0.0f);
+		glRotatef(10, -1.0f, 0.0f, 0.0f);
 	}
-	else if (key == 'o')
+	else if (key == 'k')
 	{
-		glTranslatef(0.0f, 1.0f, 0.0f);
+		glRotatef(10, 0.0f, -1.0f, 0.0f);
 	}
-	else if (key == 'i')
-	{
-		glTranslatef(0.0f, 0.0f, 1.0f);
-	}
-
 	else if (key == 'u')
 	{
-		glTranslatef(-1.0f, 0.0f, 0.0f);
+		glRotatef(10, 0.0f, 0.0f, -1.0f);
 	}
-	else if (key == 'y')
+
+	else if (key == 'd')
 	{
-		glTranslatef(0.0f, -1.0f, 0.0f);
+		glTranslatef(0.1f, 0.0f, 0.0f);
 	}
-	else if (key == 't')
+	else if (key == 'z')
 	{
-		glTranslatef(0.0f, 0.0f, -1.0f);
+		glTranslatef(0.0f, 0.1f, 0.0f);
+	}
+	else if (key == 'e')
+	{
+		glTranslatef(0.0f, 0.0f, 0.1f);
+	}
+
+	else if (key == 'q')
+	{
+		glTranslatef(-0.1f, 0.0f, 0.0f);
+	}
+	else if (key == 's')
+	{
+		glTranslatef(0.0f, -0.1f, 0.0f);
+	}
+	else if (key == 'a')
+	{
+		glTranslatef(0.0f, 0.0f, -0.1f);
 	}
 	glutPostRedisplay() ;
 }
@@ -627,7 +652,7 @@ int main(int argc, char **argv)
 	//clock_t temps;
 	
 	//-------------Affichage 2D
-	glutInit(&argc, argv);  
+	/*glutInit(&argc, argv);  
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);  
 	glutInitWindowPosition(5,5);  
 	glutInitWindowSize(600, 600);  
@@ -638,23 +663,23 @@ int main(int argc, char **argv)
 	glutKeyboardFunc(GestionClavier2D); 	
 
     glutDisplayFunc(displaySimplex2D);
-    glutMainLoop(); 
+    glutMainLoop(); */
     //-------------------------
 	
 	//-------------Affichage 3D
 	// init GLUT and create Window
-	/*glutInit(&argc, argv);
+	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(100,100);
 	glutInitWindowSize(600,600);
 	glutCreateWindow("Lighthouse3D - GLUT Tutorial");
-
+	winInit3D();
 	// register callbacks
 	glutKeyboardFunc(GestionClavier3D);
 	glutDisplayFunc(displaySimplex3D);
 
 	// enter GLUT event processing cycle
-	glutMainLoop();*/
+	glutMainLoop();
     //-------------------------
 
   	

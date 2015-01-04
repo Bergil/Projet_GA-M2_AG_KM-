@@ -27,7 +27,6 @@ Simplex* newSimplexWithPoint(Vertex* p1, Vertex* p2, Vertex* p3)
 	Simplex* t = (Simplex*) malloc(sizeof(Simplex));
 	ajoutPointsSimplex(t, p1, p2, p3);
 	t->m_afficher = 1;
-
 	/*t->m_tab_points[0] = minLexico(p1,p2,p3);
 
 	if(egalite(t->m_tab_points[0], p1))
@@ -395,13 +394,21 @@ void affichageSimplex(Simplex * s)
 	affichageVertex(s->m_tab_points[1]);
 	affichageVertex(s->m_tab_points[2]);
 }
-
-
+/**
+ * \fn randomColor();
+ *
+ * \brief Fonction renvoyant une valeur : 0 ou 1.
+ *
+ * \return flottant égal à 0 ou 1
+ */
+double randomColor()
+{
+	return rand() % (1 + 1);
+}
 
 void affichageSimplex2D(Simplex * s)
 {
 	glBegin(GL_LINE_STRIP);
-	
 	glColor3f(1.0, 1.0, 1.0);
 	
 	//fprintf(stderr, "Je viens la \n");
@@ -416,17 +423,24 @@ void affichageSimplex2D(Simplex * s)
 
 void affichageSimplex3D(Simplex * s)
 {
-	glBegin(GL_LINE);
 	
-	glColor3f(1.0, 1.0, 1.0);
+	glBegin(GL_TRIANGLES);
+	glColor3f(0.0, 1.0, 0.0);
 	
 	//fprintf(stderr, "Je viens la \n");
 	glVertex3f(s->m_tab_points[0]->coords[0], s->m_tab_points[0]->coords[1], s->m_tab_points[0]->coords[2]);
 	glVertex3f(s->m_tab_points[1]->coords[0], s->m_tab_points[1]->coords[1], s->m_tab_points[1]->coords[2]);
 	glVertex3f(s->m_tab_points[2]->coords[0], s->m_tab_points[2]->coords[1], s->m_tab_points[2]->coords[2]);
-	glVertex3f(s->m_tab_points[0]->coords[0], s->m_tab_points[0]->coords[1], s->m_tab_points[0]->coords[2]);
 	//fprintf(stderr, "Je sors la \n");
 
+	glEnd();
+	
+	glBegin(GL_LINE_STRIP);
+	glColor3f(1.0, 1.0, 1.0);
+	glVertex3f(s->m_tab_points[0]->coords[0], s->m_tab_points[0]->coords[1], s->m_tab_points[0]->coords[2]);
+	glVertex3f(s->m_tab_points[1]->coords[0], s->m_tab_points[1]->coords[1], s->m_tab_points[1]->coords[2]);
+	glVertex3f(s->m_tab_points[2]->coords[0], s->m_tab_points[2]->coords[1], s->m_tab_points[2]->coords[2]);
+	glVertex3f(s->m_tab_points[0]->coords[0], s->m_tab_points[0]->coords[1], s->m_tab_points[0]->coords[2]);
 	glEnd();
 }
 
