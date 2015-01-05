@@ -5,6 +5,7 @@
 #include "Vertex.h"
 #include "List.h"
 #include "EquationPlan.h"
+#include <math.h>
 
 #define IN 1
 #define OUT 0

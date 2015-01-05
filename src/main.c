@@ -27,9 +27,9 @@ const double minX = 0,
  * de commande de la fonction main().
  */
 int nbPoints = 0;
-int nbFacettes = -1;
+int nbFacettes = 10000;
 int dimension = 3;
-int pas = -1;
+int pas = 0;
 float rotate[3];
 float translate[3];
 
@@ -598,7 +598,7 @@ int main(int argc, char **argv)
 						nbPoints = 50;
 					  	break;
 			case 'f': if ((sscanf(optarg, "%d", &nbFacettes) != 1) || nbFacettes <= 0)
-						nbFacettes = 1000;
+						nbFacettes = 1000000;
 						break;
 			case 'd': if ((sscanf(optarg, "%d", &dimension) > 3) || dimension < 2)
 						dimension = 3;
@@ -612,12 +612,14 @@ int main(int argc, char **argv)
 					  break;
 		}
 	}
-
+	clock_t start_t, end_t;
+	double total_t;
 	assert(nbPoints > 0);
+	start_t = clock();
 	TVertex = (Vertex *) malloc(sizeof(Vertex)*nbPoints+5);
 	TSimplex = (Simplex *) malloc(sizeof(Simplex)*nbPoints*4); 
 	pile = creationPile(2*nbPoints-6);
-
+	
 	assert(TVertex != NULL);
 	selectPoints(nbPoints);
 	
@@ -660,7 +662,9 @@ int main(int argc, char **argv)
 		fprintf(stderr, "NB POINTS TRAITER: %d\n", nbPoints_traiter);
 		fprintf(stderr, "NB SIPLEX AJOUTE: %d\n", nbSimplexAjoute);
 	}
-	
+	end_t = clock();
+   total_t = (double)(end_t - start_t) / CLOCKS_PER_SEC;
+   fprintf(stderr,"Total time taken by CPU: %f\n", total_t );
   	int i;
   	for(i = 0; i < 3; i++)
   	{
