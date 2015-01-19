@@ -29,6 +29,7 @@ Simplex* newSimplexWithPoint(Vertex* p1, Vertex* p2, Vertex* p3)
 
 void ajoutPointsSimplex(Simplex* t, Vertex* p1, Vertex* p2, Vertex* p3)
 {
+	//t = malloc(sizeof(Simplex*));
 	t->m_afficher = 1;
 	t->m_tab_points[0] = minLexico(p1,p2,p3);
 
@@ -183,6 +184,7 @@ void reattributionPoints2Simplex(Simplex *t1, Simplex* t2, List *l)
 	for(i = 0; i < l->Count; i++)
 	{
 		v_temp = nodeGetData(n_temp);
+
 		//Si le point est dans le premier simplex
 		if(estDansSimplex(t1, v_temp) == IN)
 		{
@@ -283,6 +285,7 @@ void affichageSimplex(Simplex * s)
 	affichageVertex(s->m_tab_points[1]);
 	affichageVertex(s->m_tab_points[2]);
 }
+
 /**
  * \fn randomColor();
  *
@@ -298,7 +301,7 @@ double randomColor()
 void affichageSimplex2D(Simplex * s)
 {
 	glBegin(GL_LINE_STRIP);
-	glColor3f(1.0, 1.0, 1.0);
+	glColor3f(1.0, 0.0, 0.0);
 
 	glVertex2f(s->m_tab_points[0]->coords[0], s->m_tab_points[0]->coords[1]);
 	glVertex2f(s->m_tab_points[1]->coords[0], s->m_tab_points[1]->coords[1]);
@@ -339,9 +342,11 @@ void copy(Simplex * s1, Simplex * s2)
 	s1->m_tab_points[0] = s2->m_tab_points[0];
 	s1->m_tab_points[1] = s2->m_tab_points[1];
 	s1->m_tab_points[2] = s2->m_tab_points[2];
+
 	s1->m_tab_voisins[0] = s2->m_tab_voisins[0];
 	s1->m_tab_voisins[1] = s2->m_tab_voisins[1];
 	s1->m_tab_voisins[2] = s2->m_tab_voisins[2];
+	
 	s1->m_list_candidats = s2->m_list_candidats;
 	s1->m_hauteur = s2->m_hauteur;
 	s1->m_afficher = s2->m_afficher;
@@ -421,4 +426,25 @@ int ordreHauteur(Simplex *a, Simplex *b)
 		return SUP_HAUTEUR;
 	else
 		return EGAL_HAUTEUR;
+}
+
+
+void affichageVoisin(Simplex *s)
+{
+	fprintf(stderr, "*** Voisin *** \n");
+	if(s->m_tab_voisins[0] == NULL)
+		fprintf(stderr, "NULL\n");
+	else
+		affichageSimplex(s->m_tab_voisins[0]);
+
+	if(s->m_tab_voisins[1] == NULL)
+		fprintf(stderr, "NULL\n");
+	else
+		affichageSimplex(s->m_tab_voisins[1]);
+
+	if(s->m_tab_voisins[2] == NULL)
+		fprintf(stderr, "NULL\n");
+	else
+		affichageSimplex(s->m_tab_voisins[2]);
+	fprintf(stderr, "*** Fin voisin ***\n");
 }

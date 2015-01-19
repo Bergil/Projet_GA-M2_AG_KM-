@@ -83,15 +83,15 @@ void downHeapPos(fdp *f, int position)
 
 void insertSimplex(fdp *f, Simplex *s)
 {
-	if(f->nbSimplex < TAILLE_MAX)
-	{		
+	//if(f->nbSimplex < TAILLE_MAX)
+	//{		
 		//Augmente la taille de 1 pour commencer a 1
 		f->nbSimplex = f->nbSimplex + 1;
 		//Ajoute le simplex au tableau	
 		f->tableau_Simplex[f->nbSimplex] = s;
 		//On le remonte
 		upHeap(f, f->nbSimplex);
-	}	
+	//}	
 }
 
 Simplex* getTete(fdp *f)

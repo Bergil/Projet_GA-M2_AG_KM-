@@ -280,4 +280,6 @@ int indicePosition(Simplex * s, Vertex * v);
  */
 int ordreHauteur(Simplex *a, Simplex *b);
 
+void affichageVoisin(Simplex *s);
+
 #endif

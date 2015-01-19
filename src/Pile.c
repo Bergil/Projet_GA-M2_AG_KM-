@@ -23,8 +23,11 @@ int estDans(Pile * p, Simplex * s)
 
 void empiler(Pile * p, Simplex * s)
 {
-	p->m_tab_simplex[p->m_nb_elements] = s;
-	p->m_nb_elements++;
+	if(estDans(p, s) == 0)
+	{
+		p->m_tab_simplex[p->m_nb_elements] = s;
+		p->m_nb_elements++;
+	}
 }
 
 Simplex * depiler(Pile * p)
